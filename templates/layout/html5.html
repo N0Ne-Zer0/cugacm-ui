@@ -1,0 +1,277 @@
+{% import "components/form.html" as form with context %}
+{% import "components/sidemenu.html" as sidemenu with context %}
+{% import "components/paginator.html" as paginator with context %}
+{% import "components/nothing.html" as nothing with context %}
+{% import "components/noscript_note.html" as noscript_note with context %}
+{% import "components/user.html" as user with context %}
+<!DOCTYPE html>
+{% set theme = (handler.user|default({})).theme|default('default') %}
+<html data-page="{{ page_name }}" data-layout="{{ layout_name }}" class="layout--{{ layout_name }} page--{{ page_name }} theme--{{ theme }} nojs" data-mantine-color-scheme="{{ 'dark' if theme.includes('dark') else 'light' }}" lang="{{ UserContext.viewLang }}" data-app="Hydro">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="chrome=1"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ UiContext.cdn_prefix }}apple-touch-icon-180x180.png?v=20261114">
+  <link rel="icon" type="image/png" href="{{ UiContext.cdn_prefix }}favicon-32x32.png?v=20261114" sizes="32x32">
+  <link rel="icon" type="image/png" href="{{ UiContext.cdn_prefix }}android-chrome-192x192.png?v=20261114" sizes="192x192">
+  <link rel="icon" type="image/png" href="{{ UiContext.cdn_prefix }}favicon-96x96.png?v=20261114" sizes="96x96">
+  <link rel="icon" type="image/png" href="{{ UiContext.cdn_prefix }}favicon-16x16.png?v=20261114" sizes="16x16">
+  {% if handler.context.request.url %}<link rel="canonical" href="{{ model.system.get('server.url') }}{{ handler.context.request.url.substring(1) }}">{% endif %}
+  <meta name="theme-color" content="#0b4f9c">
+  {% block ogp_site %}
+  <meta property="og:site_name" content="{{ (handler.domain|default({ui:[]})).ui.name|default(model.system.get('server.name')) }}" />
+  <meta property="og:url" content="{{ model.system.get('server.url') }}{{ handler.request.path.slice(1) }}" />
+  <meta property="og:image" content="{{ UiContext.cdn_prefix }}favicon-96x96.png?v=20261114" />
+  {% endblock %}
+  {% block ogp %}
+  <meta property="og:title" content="{{ handler.renderTitle(page_name) }}" />
+  {% endblock %}
+  <title>{{ handler.renderTitle(page_name) }}</title>
+  <style>
+    body {
+      --font-family: "{{ UserContext.fontFamily }}", "Open Sans", "Seravek", "Segoe UI", "Verdana", "PingFang SC", "Hiragino Sans GB", "Lantinghei SC", "Microsoft Yahei", "WenQuanYi Micro Hei", "sans";
+      --code-font-family: "{{ UserContext.codeFontFamily }}", "monaco", "Source Code Pro", "Consolas", "Lucida Console", "monospace";
+      --font-ligatures: {{ "normal" if UserContext.codeFontLigatures else "none" }} !important;
+    }
+    {% if not isIE(handler.request.headers['user-agent']) and not handler.session.legacy %}
+      #panel { display: flex; flex-direction: column; }
+    {% endif %}
+  </style>
+  {% if process.env.DEV %}
+    <script src="/default.theme.js?version={{ global.Hydro.version['ui-default'] }}"></script>
+    <link rel="stylesheet" media="all" href="/theme-{{ global.Hydro.version['ui-default'] }}.css">
+  {% else %}
+    <link rel="stylesheet" media="all" href="{{ UiContext.cdn_prefix }}theme-{{ global.Hydro.version['ui-default'] }}.css">
+  {% endif %}
+  <link rel="stylesheet" media="all" href="{{ UiContext.cdn_prefix }}custom.css?v=20261116-36">
+  {% if not isIE(handler.request.headers['user-agent']) and not handler.session.legacy %}
+    <script>
+      var _htmlNode = document.documentElement;
+      _htmlNode.className = _htmlNode.className.replace(' nojs', ' hasjs');
+      window.UiContext = '{{ UiContext|json|jsesc|safe }}';
+      window.UserContext = '{{ UserContext|json|jsesc|safe }}';
+    </script>
+  {% endif %}
+  {% set UiContext = Object.create(UiContext) %}
+  {% set UserContext = Object.create(UserContext) %}
+</head>
+<body>
+  {% if not isIE(handler.request.headers['user-agent']) and not handler.session.legacy %}
+    <script type="text/javascript" src="{{ UiContext.cdn_prefix if UiContext.cdn_dynamic else '/' }}resource/{{ UiContext.constantVersion }}/entry.js"></script>
+    <script type="text/javascript" src="{{ UiContext.cdn_prefix }}resource/{{ global.Hydro.version['ui-default'] }}/lang-{{ _('__id') }}.js"></script>
+    <script type="text/javascript" src="{{ UiContext.cdn_prefix }}hydro-{{ global.Hydro.version['ui-default'] }}.js{% if process.env.DEV %}?version=dev{% endif %}"></script>
+  {% endif %}
+  {% block body %}{% endblock %}
+  {% block script %}{% endblock %}
+  {% if not isIE(handler.request.headers['user-agent']) and not handler.session.legacy %}
+    <script>
+      window.UiContextNew = '{{ UiContext|json|jsesc|safe }}';
+      window.UserContextNew = '{{ UserContext|json|jsesc|safe }}';
+    </script>
+    <script>
+      /* 提示条：统一收到右上角容器，并支持跨页面保持（站内跳转后继续显示，到点自动消失） */
+      (function () {
+        var STORAGE_KEY = 'cug_toast_v1';
+        var wrap = null;
+
+        function getWrap() {
+          if (wrap && document.body.contains(wrap)) return wrap;
+          wrap = document.querySelector('.cug-toast-wrap');
+          if (!wrap) {
+            wrap = document.createElement('div');
+            wrap.className = 'cug-toast-wrap';
+            document.body.appendChild(wrap);
+          }
+          return wrap;
+        }
+
+        function renderToast(id, text, expiresAt) {
+          var box = getWrap();
+          var old = box.querySelector('[data-toast-id="' + id + '"]');
+          if (old) old.remove();
+          var node = document.createElement('div');
+          node.className = 'notification success';
+          node.setAttribute('data-toast-id', id);
+          var body = document.createElement('div');
+          var p = document.createElement('p');
+          p.textContent = text;
+          body.appendChild(p);
+          node.appendChild(body);
+          box.appendChild(node);
+          var remaining = expiresAt - Date.now();
+          if (remaining <= 0) {
+            node.remove();
+            return;
+          }
+          setTimeout(function () {
+            node.classList.add('hide');
+            setTimeout(function () {
+              node.remove();
+              try {
+                var saved = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || 'null');
+                if (saved && saved.id === id) sessionStorage.removeItem(STORAGE_KEY);
+              } catch (e) {}
+            }, 260);
+          }, remaining);
+        }
+
+        function show(text, opts) {
+          opts = opts || {};
+          var id = String(Date.now()) + Math.random().toString(36).slice(2, 7);
+          var expiresAt = Date.now() + (opts.duration || 4000);
+          if (opts.persist !== false) {
+            try {
+              sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ id: id, text: text, expiresAt: expiresAt }));
+            } catch (e) {}
+          }
+          renderToast(id, text, expiresAt);
+        }
+
+        function restore() {
+          try {
+            var saved = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || 'null');
+            if (!saved) return;
+            if (!saved.expiresAt || saved.expiresAt <= Date.now()) {
+              sessionStorage.removeItem(STORAGE_KEY);
+              return;
+            }
+            renderToast(saved.id, saved.text, saved.expiresAt);
+          } catch (e) {}
+        }
+
+        window.cugToast = { show: show, restore: restore };
+
+        function boot() {
+          getWrap();
+          var mo = new MutationObserver(function (records) {
+            records.forEach(function (r) {
+              Array.prototype.forEach.call(r.addedNodes, function (n) {
+                if (n.nodeType === 1 && n.classList && n.classList.contains('notification')) {
+                  getWrap().appendChild(n);
+                }
+              });
+            });
+          });
+          mo.observe(document.body, { childList: true });
+          restore();
+        }
+
+        if (document.body) boot();
+        else document.addEventListener('DOMContentLoaded', boot);
+      })();
+    </script>
+  {% endif %}
+
+    <script>
+      /* 题面页面增强（仅限题目详情页）：二级标题转 h3、按钮实体化、语言 Tooltip */
+      (function () {
+        function enhanceProblemPage() {
+          // 首行守卫：非题目详情页直接阻断退出
+          if (!document.querySelector('.problem-content')) return;
+
+          var isZh = (document.documentElement.lang || 'zh').toLowerCase().indexOf('zh') !== -1;
+
+          // 1. 二级标题使用 <h3>：将 .sample h2 转换为 h3
+          var sampleH2s = document.querySelectorAll('.problem-content .sample h2');
+          for (var i = 0; i < sampleH2s.length; i++) {
+            var h2 = sampleH2s[i];
+            if (h2.dataset.converted === 'true') continue;
+            var h3 = document.createElement('h3');
+            h3.innerHTML = h2.innerHTML;
+            h3.className = (h2.className || '') + ' sample__title';
+            h3.dataset.converted = 'true';
+            for (var a = 0; a < h2.attributes.length; a++) {
+              var attr = h2.attributes[a];
+              if (attr.name !== 'id') h3.setAttribute(attr.name, attr.value);
+            }
+            h2.parentNode.replaceChild(h3, h2);
+          }
+
+          // 2. 样例与代码块增强：按钮文本与对应语言 Tooltip
+          var toolbars = document.querySelectorAll('.problem-content .code-toolbar');
+          for (var j = 0; j < toolbars.length; j++) {
+            var tb = toolbars[j];
+            var pre = tb.querySelector('pre');
+            var code = pre ? pre.querySelector('code') : null;
+            var langClass = (code && code.className ? code.className : (pre && pre.className ? pre.className : ''));
+            var match = langClass.match(/language-([a-zA-Z0-9_-]+)/);
+            var rawLang = match ? match[1] : '';
+
+            var langName = '文本';
+            if (rawLang.indexOf('input') === 0) {
+              langName = isZh ? ('输入数据 ' + rawLang.replace('input', '')) : ('Input ' + rawLang.replace('input', ''));
+            } else if (rawLang.indexOf('output') === 0) {
+              langName = isZh ? ('输出数据 ' + rawLang.replace('output', '')) : ('Output ' + rawLang.replace('output', ''));
+            } else if (rawLang === 'cpp' || rawLang === 'c++') {
+              langName = 'C++';
+            } else if (rawLang === 'python' || rawLang === 'py') {
+              langName = 'Python';
+            } else if (rawLang === 'java') {
+              langName = 'Java';
+            } else if (rawLang === 'c') {
+              langName = 'C';
+            } else if (rawLang) {
+              langName = rawLang.toUpperCase();
+            } else {
+              langName = isZh ? '纯文本' : 'Plain Text';
+            }
+
+            // 给代码块本身增加语言 Tooltip
+            if (pre && !pre.getAttribute('data-tooltip')) {
+              pre.setAttribute('data-tooltip', isZh ? ('语言: ' + langName) : ('Language: ' + langName));
+              pre.setAttribute('data-tooltip-pos', 'top');
+            }
+
+            // 复制按钮（替换为真正的按钮外观 + 对应语言 Tooltip）
+            var copyLink = tb.querySelector('.toolbar-item a:not(.scratchpad-fill-button a), .copy-to-clipboard-button, .toolbar-item button');
+            if (copyLink && !copyLink.dataset.enhanced) {
+              copyLink.dataset.enhanced = 'true';
+              copyLink.classList.add('cug-btn', 'cug-btn--copy');
+              if (isZh && (copyLink.textContent.trim() === 'Copy' || copyLink.textContent.trim() === 'copy')) {
+                copyLink.textContent = '复制';
+              }
+              copyLink.setAttribute('data-tooltip', isZh ? '复制到剪贴板' : 'Copy to clipboard');
+              copyLink.setAttribute('data-tooltip-pos', 'top');
+            }
+
+            // 填充到自测按钮（替换为真正的按钮外观 + 对应语言 Tooltip）
+            var fillLink = tb.querySelector('.scratchpad-fill-button a, .scratchpad-fill-button button');
+            if (fillLink && !fillLink.dataset.enhanced) {
+              fillLink.dataset.enhanced = 'true';
+              fillLink.classList.add('cug-btn', 'cug-btn--fill');
+              if (isZh) {
+                fillLink.textContent = '填充到自测';
+              }
+              fillLink.setAttribute('data-tooltip', isZh ? '填入在线编程自测 (F9)' : 'Fill to scratchpad pretest (F9)');
+              fillLink.setAttribute('data-tooltip-pos', 'top');
+            }
+          }
+        }
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', enhanceProblemPage);
+        } else {
+          enhanceProblemPage();
+        }
+        window.addEventListener('load', enhanceProblemPage);
+
+        if (window.$) {
+          $(document).on('vjContentNew', enhanceProblemPage);
+        }
+
+        var mo = new MutationObserver(function () {
+          enhanceProblemPage();
+        });
+        if (document.body) {
+          mo.observe(document.body, { childList: true, subtree: true });
+        } else {
+          document.addEventListener('DOMContentLoaded', function () {
+            mo.observe(document.body, { childList: true, subtree: true });
+          });
+        }
+      })();
+    </script>
+</body>
+</html>

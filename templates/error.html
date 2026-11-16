@@ -1,0 +1,33 @@
+{% extends "layout/basic.html" %}
+{% block content %}
+<div class="row"><div class="columns">
+  <div class="section cug-error-card">
+    <div class="section__header">
+      <h1 class="section__title">{{ _('Oops!') }}</h1>
+    </div>
+    <div class="section__body typo">
+      <p class="cug-error-card__msg">{{ _(error.message).formatFromArray(error.params) }}</p>
+      <div class="cug-error-card__actions">
+        <a href="{{ url('homepage') }}" class="primary button">{{ _('Back to Homepage') }}</a>
+        <a href="javascript:history.back();" class="button">{{ _('Go Back') }}</a>
+        <a href="https://docs.qq.com/doc/DU1djZVZSbHNnYVpa" target="_blank" rel="noopener" class="button">{{ _('Issue Feedback') }}</a>
+      </div>
+      <div class="cug-error-card__meta">
+        <p><strong>{{ _('Technical Information') }}:</strong> {{ error.name }}</p>
+        {% if error.params and error.params.length %}
+        <p><strong>{{ _('Arguments') }}:</strong></p>
+        <ol>
+        {%- for param in error.params -%}
+          {% if instanceof(param, UserFacingError) %}
+            <li>{{ _(param.message).formatFromArray(param.params)}}</li>
+          {% else %}
+            <li>{{ param }}</li>
+          {% endif %}
+        {%- endfor -%}
+        </ol>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div></div>
+{% endblock %}

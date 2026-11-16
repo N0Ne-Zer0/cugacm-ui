@@ -1,0 +1,38 @@
+services:
+  mongo:
+    image: mongo:8
+    restart: unless-stopped
+    volumes:
+      - hydro_mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  hydro:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+    ports:
+      - "8888:8888"
+    environment:
+      DEV: "1"
+      NODE_PATH: /usr/local/share/.config/yarn/global/node_modules
+    # 所有业务内容都挂载，镜像里只保留 Hydro 本体与官方依赖：
+    # 切分支后镜像内容不变，只有挂载的内容随之变化，所以永远不需要 --build。
+    volumes:
+      - ..:/root/.hydro/addons/ui-custom
+      - ./addons:/opt/local-addons:ro
+      - ./config.json:/root/.hydro/config.json:ro
+      - ./seed-local.js:/root/seed-local.js:ro
+      - ./gen-addons.js:/root/gen-addons.js:ro
+      - ./entrypoint.sh:/root/entrypoint.sh:ro
+    command: >
+      hydrooj --host 0.0.0.0 --port 8888
+      --template /root/.hydro/addons/ui-custom/templates
+
+volumes:
+  hydro_mongo_data:

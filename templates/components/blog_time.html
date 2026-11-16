@@ -1,0 +1,8 @@
+{% macro render_time(ddoc, withLabel=false) %}
+{%- set createdTs = ddoc._id.getTimestamp() -%}
+{%- set updated = ddoc.updateAt and createdTs and (ddoc.updateAt.getTime() - createdTs.getTime() > 60000) -%}
+{%- if withLabel -%}
+<span class="cug-blog-time__label">{{ _('Updated at') if updated else _('Published at') }}</span>
+{% endif -%}
+{{ datetimeSpan(ddoc.updateAt if updated else ddoc._id)|safe }}
+{% endmacro %}

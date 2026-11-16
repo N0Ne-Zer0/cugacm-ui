@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>服务暂时不可用 - CUGACM OJ</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f5f6f8;
+      color: #1f2937;
+      font-family: "Open Sans", "PingFang SC", "Microsoft Yahei", sans-serif;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .card {
+      max-width: 520px;
+      width: 100%;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-top: 3px solid #0b4f9c;
+      border-radius: 6px;
+      padding: 28px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    h1 {
+      margin: 0 0 10px;
+      font-size: 20px;
+      color: #111827;
+    }
+    p {
+      margin: 0 0 14px;
+      font-size: 14px;
+      line-height: 1.7;
+      color: #4b5563;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    a.btn {
+      display: inline-block;
+      padding: 8px 16px;
+      font-size: 14px;
+      border-radius: 4px;
+      text-decoration: none;
+      border: 1px solid #d1d5db;
+      color: #374151;
+      background: #f9fafb;
+    }
+    a.btn-primary {
+      background: #0b4f9c;
+      border-color: #0b4f9c;
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>页面暂时遇到一点问题（500）</h1>
+    <p>服务器处理请求时发生内部错误。您可以尝试刷新页面，或先返回首页继续浏览。</p>
+    <p>如果该问题持续出现，欢迎在 <a href="https://docs.qq.com/doc/DU1djZVZSbHNnYVpa" target="_blank" rel="noopener">CUGACM OJ 问题与反馈记录</a> 登记，或联系站长刘博文（QQ：2677816734）。</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="/">返回首页</a>
+      <a class="btn" href="javascript:window.location.reload()">刷新重试</a>
+    </div>
+  </div>
+  <!--
+  {{ handler.request.hostname }}{{ handler.request.originalPath|default(handler.request.path) }}
+  {{ error.message }}
+  {{ error.stack }}
+  -->
+</body>
+</html>

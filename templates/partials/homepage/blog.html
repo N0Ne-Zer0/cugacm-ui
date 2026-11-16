@@ -1,0 +1,14 @@
+{% set ddocs = payload[0] %}
+{% if ddocs and ddocs.length %}
+  <div class="section page--blog_square">
+    <div class="section__header">
+      <h1 class="section__title">{{ _('Latest Blogs') }}</h1>
+    </div>
+    <ol class="section__list cug-blog-card-list">
+      {% include "partials/homepage/blog_items.html" %}
+    </ol>
+    <ul class="pager pager-bottom"><li>
+      <a class="pager__item next link" href="{{ url('blog_square') }}">{{ _('More') }} ></a>
+    </li></ul>
+  </div>
+{% endif %}

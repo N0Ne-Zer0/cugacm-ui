@@ -1,0 +1,58 @@
+{% set page_name = "title_main" %}
+{% import "components/user.html" as user with context %}
+{% extends "layout/basic.html" %}
+{% block content %}
+<div class="row">
+  <div class="medium-9 columns">
+    <div class="section">
+      <div class="section__header">
+        <h1 class="section__title">{{ _('User Titles') }}</h1>
+      </div>
+      <div class="section__body typo">
+        <p>{{ _('titles_intro') }}</p>
+      </div>
+      <ol class="section__list title-list">
+        {%- for d in defs -%}
+        <li class="section__list__item title-item">
+          <div class="title-item__head">
+            <span class="user-profile-badge title-chip" style="background-color:#{{ d.bg }}{% if d.fg %};color:#{{ d.fg }}{% endif %}">{{ d.name }}</span>
+            <span class="title-item__count">{{ _('{0} holders').format((holders[d.key] or []).length) }}</span>
+          </div>
+          <p class="title-item__desc">{{ d.desc }}</p>
+          <p class="title-item__how"><strong>{{ _('How to get') }}</strong>：{{ d.how }}</p>
+          {%- if holders[d.key] and holders[d.key].length -%}
+          <div class="title-item__holders">
+            <span class="title-item__holders-label">{{ _('Holders') }}</span>
+            {%- for uid in holders[d.key] -%}
+              {%- if udict[uid] %}<span class="title-item__holder">{{ user.render_inline(udict[uid], badge=false, levelbadge=false, modbadge=false, title=false) }}</span>{% endif -%}
+            {%- endfor -%}
+          </div>
+          {%- endif -%}
+        </li>
+        {%- endfor -%}
+      </ol>
+      <div class="section__footer typo cug-title-note">
+        <p>{{ _('Titles are granted manually by association administrators for now; automatic rules are still being designed.') }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="medium-3 columns">
+    <div class="section side">
+      <div class="section__header">
+        <h1 class="section__title">{{ _('About Titles') }}</h1>
+      </div>
+      <div class="section__body typo">
+        <p>{{ _('titles_intro') }}</p>
+        <ul class="cug-title-tips">
+          <li>{{ _('Titles appear next to your username on your profile, in discussions, blogs, and the ranking.') }}</li>
+          <li>{{ _('Each account holds one title at a time; a new grant replaces the old one.') }}</li>
+          <li>{{ _('Contact association administrators if you think you qualify for a title.') }}</li>
+        </ul>
+        {%- if handler.user.hasPriv(PRIV.PRIV_EDIT_SYSTEM) -%}
+        <p style="margin-bottom:0;"><a href="{{ url('manage_title') }}" class="expanded primary button">{{ _('Manage Titles') }}</a></p>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

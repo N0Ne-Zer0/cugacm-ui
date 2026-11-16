@@ -1,0 +1,7 @@
+{
+  "name": "hydro-addon-user-title",
+  "version": "1.0.0",
+  "description": "User title (badge) catalog and admin assignment for Hydro",
+  "main": "index.js",
+  "license": "AGPL-3.0"
+}

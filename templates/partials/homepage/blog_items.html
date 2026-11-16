@@ -1,0 +1,27 @@
+{% import "components/blog_time.html" as blogtime with context %}
+{%- for ddoc in ddocs -%}
+  {% set blogAuthor = (udict and udict[ddoc.owner]) or ownerUdoc %}
+  <li class="cug-blog-card">
+    {% if blogAuthor %}
+    <div class="cug-blog-card__rail">
+      <a class="cug-blog-card__avatar" href="{{ url('user_detail', uid=blogAuthor._id) }}" title="{{ blogAuthor.uname }}">
+        <img src="{{ avatarUrl(blogAuthor.avatar|default(''), 160) }}" width="68" height="68" alt="{{ blogAuthor.uname }}">
+      </a>
+      <span class="cug-blog-card__name">{{ blogAuthor.uname }}</span>
+    </div>
+    {% endif %}
+    <div class="cug-blog-card__main">
+      <h2 class="cug-blog-card__title">
+        <a href="{{ url('blog_detail', uid=ddoc.owner, did=ddoc._id, anchor=(ddoc.updateAt.getTime() if ddoc.updateAt else '')) }}" data-emoji-enabled>{{ ddoc['title'] }}</a>
+      </h2>
+      {% if ddoc.content %}
+        <p class="cug-blog-card__excerpt">{{ ddoc.content|markdown|problemPreview|truncate(150, true) }}</p>
+      {% endif %}
+      <div class="cug-blog-card__meta">
+        <span>{{ blogtime.render_time(ddoc) }}</span>
+        <span>{{ _('{0} views').format(ddoc.views|default(0)) }}</span>
+        <span>{{ _('{0} comments').format(ddoc.nReply|default(0)) }}</span>
+      </div>
+    </div>
+  </li>
+{%- endfor -%}

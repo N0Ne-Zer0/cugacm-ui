@@ -1,0 +1,35 @@
+{% extends "layout/basic.html" %}
+{% block content %}
+<div class="row"><div class="columns">
+  <div class="section cug-auth-section">
+    <div class="section__body">
+      <div class="cug-auth-head">
+        <img src="{{ UiContext.cdn_prefix }}stamp.png?v=20261114" width="48" height="48" alt="CUGACM">
+        <h1>{{ _('Lost Password') }}</h1>
+        <p>{{ model.system.get('server.name') }}</p>
+      </div>
+      {% if not model.system.get('smtp.user') %}
+        <div class="cug-auth-notice">
+          {{ _('Email password recovery is currently disabled on this site. Please contact President & Maintainer Liu Bowen (QQ: 2677816734) after verifying your campus account details.') }}
+        </div>
+        <div class="cug-auth-submit">
+          <a href="{{ url('user_login') }}" class="expanded primary button">{{ _('Back to Login') }}</a>
+        </div>
+      {% else %}
+        <form method="POST">
+          <div class="cug-auth-field">
+            <label for="lost-mail">{{ _('Email') }}</label>
+            <input id="lost-mail" name="mail" type="text" class="textbox" autofocus>
+          </div>
+          <div class="cug-auth-submit">
+            <input type="submit" value="{{ _('Send Password Reset Email') }}" class="expanded primary button">
+          </div>
+        </form>
+        <div class="cug-auth-foot">
+          <a href="{{ url('user_login') }}">{{ _('Back to Login') }}</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div></div>
+{% endblock %}

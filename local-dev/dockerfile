@@ -1,0 +1,41 @@
+FROM node:24-bookworm-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git ca-certificates python3 make g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV HOME=/root
+ENV NODE_PATH=/usr/local/share/.config/yarn/global/node_modules
+
+# 如国内网络拉 npm 慢，可取消下面两行注释换镜像源
+# RUN yarn config set registry https://registry.npmmirror.com && \
+#     npm config set registry https://registry.npmmirror.com
+
+RUN yarn config set global-folder /usr/local/share/.config/yarn/global && \
+    yarn global add \
+      hydrooj@5.1.0 \
+      @hydrooj/ui-default@4.59.1 \
+      @hydrooj/fps-importer@1.7.0 \
+      @hydrooj/a11y@0.0.4 \
+      @hydrooj/blog@0.1.0-beta.2 \
+      @hydrooj/onsite-toolkit@0.1.1
+
+RUN mkdir -p /root/.hydro/addons && \
+    hydrooj install @hydrooj/scoreboard-xcpcio@0.1.0 && \
+    cd /root/.hydro/addons/scoreboard-xcpcio && yarn add lru-cache@^11.5.3 --ignore-scripts && \
+    hydrooj install @hydrooj/import-qduoj@1.7.0 && \
+    hydrooj install @hydrooj/import-hoj@0.1.0 && \
+    hydrooj install @hydrooj/vjudge@1.10.1 && \
+    hydrooj install hydrooj-resolver@1.0.1 && \
+    hydrooj install hydro-aoplog@0.2.0
+
+# 镜像里只放「与仓库内容无关」的东西：Hydro 本体 + 官方插件。
+# addon.json 由 entrypoint 每次启动时按实际挂载的插件目录生成（见 gen-addons.js），
+# 因此切换 git 分支不需要重建镜像，也不需要改 addon.json。
+COPY config.json /root/.hydro/config.json
+COPY seed-local.js /root/seed-local.js
+COPY gen-addons.js /root/gen-addons.js
+COPY entrypoint.sh /root/entrypoint.sh
+RUN sed -i 's/\r$//' /root/entrypoint.sh && chmod +x /root/entrypoint.sh
+
+ENTRYPOINT ["/root/entrypoint.sh"]

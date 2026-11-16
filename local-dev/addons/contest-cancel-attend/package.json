@@ -1,0 +1,7 @@
+{
+  "name": "hydro-addon-contest-cancel-attend",
+  "version": "1.0.0",
+  "description": "Allow attendees to cancel contest registration before the contest starts",
+  "main": "index.js",
+  "license": "AGPL-3.0"
+}

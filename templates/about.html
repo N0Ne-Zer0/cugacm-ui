@@ -1,0 +1,102 @@
+{% extends "layout/wiki_base.html" %}
+{% block wiki_content %}
+{% set name = handler.domain.ui.name|default(model.system.get('server.name')) %}
+{% set sectionMap = sections|groupby('id') %}
+{% if not sectionMap['about'] %}
+<div class="section" data-heading-extract-to="#menu-item-wiki_about">
+  <div class="section__header">
+    <h1 class="section__title" id="about" data-heading>{{ _('About') }}</h1>
+  </div>
+  <div class="section__body typo">
+    <p>{{ _('Founded in 2003 and supported by the School of Computer Science, the CUG ACM-ICPC Association fosters algorithmic thinking, software engineering practice, and collaborative problem solving across the university.') }}</p>
+    <ul>
+      <li><strong>{{ _('Daily Practice') }}</strong>：{{ _('Providing problem sets, homework assignments, and online judging for C/C++, Java, Python, and other languages.') }}</li>
+      <li><strong>{{ _('Campus & Regional Contests') }}</strong>：{{ _('Organizing campus contests such as the Freshman Cup and Central China Collegiate Invitational, and supporting teams in ICPC & CCPC.') }}</li>
+      <li><strong>{{ _('Discussion & Exchange') }}</strong>：{{ _('Encouraging problem discussions, solution sharing, and peer learning across grades and majors.') }}</li>
+    </ul>
+  </div>
+</div>
+{% endif %}
+{%- for section in sections -%}
+  {% if not (section.content and section.content.includes('这里是「关于」页面的 Markdown 内容占位')) %}
+  <div class="section" data-heading-extract-to="#menu-item-wiki_about">
+    {% if section.title %}
+    <div class="section__header">
+      <h1 class="section__title" id="{{ section.id }}" data-heading>{{ section.title }}</h1>
+    </div>
+    {% endif %}
+    {% if section.id == 'contact' and section.content and section.content.includes('hydro.js.org') %}
+    <div class="section__body typo">
+      <ul>
+        <li><strong>{{ _('Campus Activity Room') }}</strong>：{{ _('Room 305, Student Activity Center, Future City Campus, China University of Geosciences (Wuhan).') }}</li>
+        <li><strong>{{ _('Platform Maintainer') }}</strong>：{{ _('President Liu Bowen (Server & Frontend Repo Maintainer, QQ: 2677816734).') }}</li>
+        <li><strong>{{ _('Feedback Document') }}</strong>：<a href="https://docs.qq.com/doc/DU1djZVZSbHNnYVpa" target="_blank" rel="noopener">{{ _('CUGACM OJ Feedback Doc') }}</a>（{{ _('Please log bugs or suggestions in the doc first so nothing gets missed, and feel free to add QQ to discuss.') }}）</li>
+        <li><strong>{{ _('Frontend Co-building') }}</strong>：{{ _('Students interested in improving the OJ frontend UI are welcome to contact Liu Bowen (QQ: 2677816734) to contribute.') }}（<a href="https://github.com/N0Ne-Zer0/cugacm-ui" target="_blank" rel="noopener">https://github.com/N0Ne-Zer0/cugacm-ui</a>）</li>
+        <li><strong>{{ _('Frontend Notice') }}</strong>：{{ _('The frontend UI of this site is heavily designed with AI assistance and may occasionally have layout glitches or unexpected issues. Bug reports and PRs are always welcome.') }}</li>
+        <li><strong>{{ _('Online Feedback') }}</strong>：{{ _('For account assistance, problem errata, or contest inquiries, please post in the') }} <a href="{{ url('discussion_main') }}">{{ _('Discussion') }}</a> {{ _('or contact association maintainers.') }}</li>
+      </ul>
+    </div>
+    {% else %}
+    <div class="section__body typo richmedia">
+      {{ section.content|markdown|safe }}
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+{%- endfor -%}
+{% if not sectionMap['contact'] %}
+<div class="section" data-heading-extract-to="#menu-item-wiki_about">
+  <div class="section__header">
+    <h1 class="section__title" id="contact" data-heading>{{ _('Contact Us') }}</h1>
+  </div>
+  <div class="section__body typo">
+    <ul>
+      <li><strong>{{ _('Campus Activity Room') }}</strong>：{{ _('Room 305, Student Activity Center, Future City Campus, China University of Geosciences (Wuhan).') }}</li>
+      <li><strong>{{ _('Platform Maintainer') }}</strong>：{{ _('President Liu Bowen (Server & Frontend Repo Maintainer, QQ: 2677816734).') }}</li>
+      <li><strong>{{ _('Feedback Document') }}</strong>：<a href="https://docs.qq.com/doc/DU1djZVZSbHNnYVpa" target="_blank" rel="noopener">{{ _('CUGACM OJ Feedback Doc') }}</a>（{{ _('Please log bugs or suggestions in the doc first so nothing gets missed, and feel free to add QQ to discuss.') }}）</li>
+      <li><strong>{{ _('Frontend Co-building') }}</strong>：{{ _('Students interested in improving the OJ frontend UI are welcome to contact Liu Bowen (QQ: 2677816734) to contribute.') }}</li>
+      <li><strong>{{ _('Online Feedback') }}</strong>：{{ _('For account assistance, problem errata, or contest inquiries, please post in the') }} <a href="{{ url('discussion_main') }}">{{ _('Discussion') }}</a> {{ _('or contact association maintainers.') }}</li>
+    </ul>
+  </div>
+</div>
+{% endif %}
+{% if not sectionMap['privacy'] %}
+<div class="section" data-heading-extract-to="#menu-item-wiki_about">
+  <div class="section__header">
+    <h1 class="section__title" id="privacy" data-heading>{{ _('Privacy') }}</h1>
+  </div>
+  <div class="section__body typo">
+    <ul>
+      <li>{{ _('Account information (username, email, and domain membership) is used solely for platform authentication, homework grading, and contest administration.') }}</li>
+      <li>{{ _('Submission code and judge records are used for automated evaluation and contest scoreboards; visibility follows domain and contest rules.') }}</li>
+      <li>{{ _('Passwords are stored using salted cryptographic hashes; we do not share personal user information with unrelated third parties.') }}</li>
+    </ul>
+  </div>
+</div>
+{% endif %}
+{% if not sectionMap['tos'] %}
+<div class="section" data-heading-extract-to="#menu-item-wiki_about">
+  <div class="section__header">
+    <h1 class="section__title" id="tos" data-heading>{{ _('Terms of Service') }}</h1>
+  </div>
+  <div class="section__body typo">
+    <ul>
+      <li>{{ _('Use online judging resources responsibly. Attacks on the judge sandbox, intentional infinite output/fork bombs, or unauthorized system calls are strictly prohibited.') }}</li>
+      <li>{{ _('Uphold academic integrity in contests and assignments. Plagiarism, code sharing during live contests, or account sharing may result in score cancellation.') }}</li>
+      <li>{{ _('Keep discussions respectful and focused on algorithms, programming, and constructive technical exchange.') }}</li>
+    </ul>
+  </div>
+</div>
+{% endif %}
+{% if not sectionMap['copyright'] %}
+<div class="section" data-heading-extract-to="#menu-item-wiki_about">
+  <div class="section__header">
+    <h1 class="section__title" id="copyright" data-heading>{{ _('Copyright Complaint') }}</h1>
+  </div>
+  <div class="section__body typo">
+    <p>{{ _('Problems, editorials, and resources hosted on this platform belong to their respective authors or the CUG ACM-ICPC Association and are provided for educational and contest training use.') }}</p>
+    <p>{{ _('If you believe any problem statement, solution, or asset infringes your copyright, please reach out via the Contact Us section with proof of ownership and the corresponding link so we can review and remove it promptly.') }}</p>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

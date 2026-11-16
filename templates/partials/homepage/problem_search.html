@@ -1,0 +1,15 @@
+<div class="section side">
+  <div class="section__header">
+    <h1 class="section__title">{{ _('Search') }}</h1>
+  </div>
+  <form method="get" action="{{ url('problem_main') }}">
+    <div class="section__body">
+      <div class="cug-search-row">
+        <label>
+          <input name="q" type="text" class="textbox" value="" placeholder="{{ _('Problem ID / Title / Tag') }}">
+        </label>
+        <button type="submit" class="primary button">{{ _('Search') }}</button>
+      </div>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,7 @@
+{
+  "name": "hydro-addon-ui-custom",
+  "version": "1.0.0",
+  "description": "Hydro UI override layer: page templates, locales, static assets",
+  "main": "index.js",
+  "license": "AGPL-3.0"
+}

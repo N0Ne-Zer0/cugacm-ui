@@ -1,0 +1,54 @@
+{% extends "layout/home_base.html" %}
+{% block home_content %}
+<div class="section">
+  <div id="messagePad">
+    {{ noscript_note.render() }}
+    <div class="loader-container"><div class="loader"></div></div>
+  </div>
+</div>
+<script>
+  /* 给自己发消息时，本地回显与 socket 推送都会追加一次，导致同一条消息显示两遍。
+     这里仅对「当前会话对象就是自己」的情况做一次相邻重复气泡折叠，刷新后依旧是单份。 */
+  (function () {
+    var MY_UID = {{ handler.user._id }};
+    function currentTarget() {
+      var header = document.querySelector('.messagepad__header');
+      if (!header) return null;
+      var m = /UID:\s*(\d+)/.exec(header.textContent || '');
+      return m ? Number(m[1]) : null;
+    }
+    function bodyText(li) {
+      var body = li.querySelector('.messagepad__message__body');
+      if (!body) return null;
+      var content = body.querySelector('div');
+      return content ? (content.textContent || '').trim() : null;
+    }
+    function sideOf(li) {
+      return li.className.indexOf('side--self') >= 0 ? 'self' : 'other';
+    }
+    function dedupe() {
+      var lists = document.querySelectorAll('ol.messagepad__content');
+      Array.prototype.forEach.call(lists, function (list) {
+        var nodes = Array.prototype.slice.call(list.children);
+        nodes.forEach(function (n) { n.style.display = ''; });
+        if (currentTarget() !== MY_UID) return;
+        for (var i = 1; i < nodes.length; i++) {
+          var prev = nodes[i - 1];
+          var cur = nodes[i];
+          var a = bodyText(prev);
+          var b = bodyText(cur);
+          if (a && b && a === b && sideOf(prev) === sideOf(cur)) cur.style.display = 'none';
+        }
+      });
+    }
+    function boot() {
+      var pad = document.getElementById('messagePad');
+      if (!pad) return;
+      new MutationObserver(dedupe).observe(pad, { childList: true, subtree: true, characterData: true });
+      dedupe();
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+    else boot();
+  })();
+</script>
+{% endblock %}

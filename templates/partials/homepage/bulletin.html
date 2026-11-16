@@ -1,0 +1,181 @@
+  <div class="section">
+    <div class="section__header cug-bulletin-header">
+      <div class="cug-bulletin-head">
+        <img class="cug-bulletin-head__stamp" src="{{ UiContext.cdn_prefix }}stamp.png?v=20261114" width="36" height="36" alt="CUGACM">
+        <div>
+          <h1 class="section__title" style="margin:0;">
+            {% if handler.domain._id == 'system' %}
+              {{ _('CUG ACM-ICPC Association Online Judge') }}
+            {% else %}
+              {{ handler.domain.name }}
+            {% endif %}
+          </h1>
+          <div class="cug-bulletin-head__sub">Est. 2003 · Program the Future World</div>
+        </div>
+      </div>
+    </div>
+    <div class="section__body typo">
+      <p>{{ _('Welcome to the online judge platform of CUG ACM-ICPC Association.') }} <strong>{{ _('Registration requires an educational email (.edu).') }}</strong></p>
+      <ul>
+        <li><a href="{{ url('problem_main') }}">{{ _('Problem Set') }}</a>：{{ _('Browse problems by ID, tag, or difficulty and submit code online.') }}</li>
+        <li><a href="{{ url('contest_main') }}">{{ _('Contests') }}</a> / <a href="{{ url('homework_main') }}">{{ _('Homework') }}</a>：{{ _('Join campus contests, practice rounds, and weekly assignments.') }}</li>
+        <li><a href="{{ url('record_main') }}">{{ _('Judging Queue') }}</a> / <a href="{{ url('wiki_help') }}">{{ _('Help') }}</a>：{{ _('View submission statuses, compiler environments, and I/O conventions.') }}</li>
+        <li><strong>{{ _('Feedback & Frontend Co-building') }}</strong>：{{ _('Please record bugs or suggestions in') }} <a href="https://docs.qq.com/doc/DU1djZVZSbHNnYVpa" target="_blank" rel="noopener">{{ _('CUGACM OJ Feedback Doc') }}</a>{{ _(', or contact President & Maintainer Liu Bowen (QQ: 2677816734).') }} <a href="https://github.com/N0Ne-Zer0/cugacm-ui" target="_blank" rel="noopener">{{ _('Frontend Repo') }}</a></li>
+      </ul>
+      <p class="supplementary" style="margin-top:0.55rem;margin-bottom:0.25rem;">
+        <strong>{{ _('Frontend Notice') }}</strong>：{{ _('The frontend UI of this site is heavily designed with AI assistance and may occasionally have layout glitches or unexpected issues. Bug reports and PRs are always welcome.') }}
+      </p>
+      <p class="cug-policy-line">{{ _('Using AI to take part in contests or boost scores counts as cheating.') }}</p>
+      <div class="cug-bulletin-actions">
+        <a class="cug-mini-btn cug-mini-btn--lucky" id="cug-lucky-btn" href="{{ url('problem_random') }}">
+          <span class="icon icon-feeling-lucky"></span> {{ _('Lucky') }}
+        </a>
+        {% if ui.getNodes('Nav').map(eval("n=>n.name")).includes('title_main') %}
+          <a class="cug-mini-btn" href="{{ url('title_main') }}">{{ _('User Titles') }}</a>
+        {% endif %}
+        <a class="cug-mini-btn" href="https://docs.qq.com/doc/DU1djZVZSbHNnYVpa" target="_blank" rel="noopener">{{ _('Issue Feedback') }}</a>
+        <a class="cug-mini-btn" href="{{ url('wiki_help') }}">{{ _('Help') }}</a>
+        <a class="cug-mini-btn" href="{{ url('wiki_about') }}">{{ _('About') }}</a>
+      </div>
+      <script>
+        /* 试试手气：在题目 / 讨论 / 博客中随机抽一条，先弹通知再跳转 */
+        (function () {
+          var btn = document.getElementById('cug-lucky-btn');
+          if (!btn) return;
+          var fallback = btn.getAttribute('href');
+
+          function pickRandom(list) {
+            return list[Math.floor(Math.random() * list.length)];
+          }
+
+          function showToast(text) {
+            if (window.cugToast) {
+              window.cugToast.show(text, { duration: 4000 });
+              return;
+            }
+            var wrap = document.querySelector('.cug-toast-wrap');
+            if (!wrap) {
+              wrap = document.createElement('div');
+              wrap.className = 'cug-toast-wrap';
+              document.body.appendChild(wrap);
+            }
+            var node = document.createElement('div');
+            node.className = 'notification success';
+            var body = document.createElement('div');
+            var p = document.createElement('p');
+            p.textContent = text;
+            body.appendChild(p);
+            node.appendChild(body);
+            wrap.appendChild(node);
+            setTimeout(function () {
+              node.classList.add('hide');
+              setTimeout(function () { node.remove(); }, 260);
+            }, 2800);
+          }
+
+          function loadDoc(url) {
+            return fetch(url, { credentials: 'same-origin' })
+              .then(function (res) { return res.ok ? res.text() : null; })
+              .then(function (html) { return html ? new DOMParser().parseFromString(html, 'text/html') : null; })
+              .catch(function () { return null; });
+          }
+
+          function trimHash(href) {
+            return (href || '').split('#')[0];
+          }
+
+          function cleanText(s) {
+            return (s || '').replace(/[\s\u00a0]+/g, ' ').trim();
+          }
+
+          function randomProblem() {
+            return loadDoc('{{ url('problem_main') }}').then(function (doc) {
+              if (!doc) return null;
+              var rows = doc.querySelectorAll('.data-table tbody tr[data-pid]');
+              if (!rows.length) return null;
+              var row = pickRandom([].slice.call(rows));
+              var pid = row.getAttribute('data-pid');
+              var diffEl = row.querySelector('.col--difficulty .cug-diff');
+              var diff = cleanText(diffEl ? diffEl.textContent : '');
+              var titleEl = row.querySelector('.col--problem-name a');
+              var title = cleanText(titleEl ? titleEl.textContent : '');
+              var msg = (diff && diff.indexOf('无') === -1)
+                ? '你随机到了一道难度为 ' + diff + ' 的题目！'
+                : '你随机到了一道题目！';
+              return { url: '/p/' + pid, message: title ? msg + ' ' + title : msg };
+            });
+          }
+
+          function randomDiscussion() {
+            return loadDoc('{{ url('discussion_main') }}').then(function (doc) {
+              if (!doc) return null;
+              var links = [].slice.call(doc.querySelectorAll('a[href^="/discuss/"]')).filter(function (a) {
+                return /^\/discuss\/[0-9a-f]{24}$/.test(trimHash(a.getAttribute('href')));
+              });
+              if (!links.length) return null;
+              var a = pickRandom(links);
+              return { url: trimHash(a.getAttribute('href')), message: '你随机到了一个讨论：' + cleanText(a.textContent) };
+            });
+          }
+
+          function randomBlog() {
+            return loadDoc('{{ url('blog_square') if ui.getNodes('Nav').map(eval("n=>n.name")).includes('blog_square') else '/blog' }}').then(function (doc) {
+              if (!doc) return null;
+              var links = [].slice.call(doc.querySelectorAll('a[href^="/blog/"]')).filter(function (a) {
+                return /^\/blog\/\d+\/[0-9a-f]{24}$/.test(trimHash(a.getAttribute('href')));
+              });
+              if (!links.length) return null;
+              var a = pickRandom(links);
+              return { url: trimHash(a.getAttribute('href')), message: '你随机到了一篇博客：' + cleanText(a.textContent) };
+            });
+          }
+
+          function shuffle(list) {
+            for (var i = list.length - 1; i > 0; i--) {
+              var j = Math.floor(Math.random() * (i + 1));
+              var tmp = list[i];
+              list[i] = list[j];
+              list[j] = tmp;
+            }
+            return list;
+          }
+
+          function pickOne() {
+            var pickers = shuffle([randomProblem, randomDiscussion, randomBlog]);
+            var chain = Promise.resolve(null);
+            pickers.forEach(function (fn) {
+              chain = chain.then(function (res) { return res || fn(); });
+            });
+            return chain;
+          }
+
+          /* 便于调试：控制台可调用 __cugLuckyPick() 预览随机结果 */
+          window.__cugLuckyPick = pickOne;
+
+          btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            if (btn.getAttribute('data-busy')) return;
+            btn.setAttribute('data-busy', '1');
+            pickOne().then(function (res) {
+              btn.removeAttribute('data-busy');
+              if (!res) {
+                window.location.href = fallback;
+                return;
+              }
+              showToast(res.message);
+              setTimeout(function () { window.location.href = res.url; }, 850);
+            }).catch(function () {
+              btn.removeAttribute('data-busy');
+              window.location.href = fallback;
+            });
+          });
+        })();
+      </script>
+      {% if handler.user.hasPerm(perm.PERM_EDIT_DOMAIN) %}
+        <p class="supplementary" style="margin-top:0.75rem;margin-bottom:0;">
+          {{ _('Domain maintainers can publish a custom pinned bulletin in') }}
+          <a href="{{ url('domain_edit') }}">{{ _('Domain Settings') }}</a>.
+        </p>
+      {% endif %}
+    </div>
+  </div>

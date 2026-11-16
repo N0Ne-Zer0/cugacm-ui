@@ -1,0 +1,19 @@
+{% extends "layout/basic.html" %}
+{% block content %}
+<div class="row"><div class="columns">
+  <div class="section cug-auth-section">
+    <div class="section__body">
+      <div class="cug-auth-head">
+        <img src="{{ UiContext.cdn_prefix }}stamp.png?v=20261114" width="48" height="48" alt="CUGACM">
+        <h1>{{ _('New Email') }}</h1>
+      </div>
+      <div class="cug-auth-notice">
+        {{ _('Confirmation mail has been sent to your new email.') }}
+      </div>
+      <div class="cug-auth-submit">
+        <a href="{{ url('home_security') }}" class="expanded primary button">{{ _('home_security') }}</a>
+      </div>
+    </div>
+  </div>
+</div></div>
+{% endblock %}

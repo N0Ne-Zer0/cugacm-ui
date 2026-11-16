@@ -1,0 +1,48 @@
+{% extends "layout/basic.html" %}
+{% block content %}
+<div class="row"><div class="columns">
+  <div class="section cug-auth-section">
+    <div class="section__body">
+      <div class="cug-auth-head">
+        <img src="{{ UiContext.cdn_prefix }}stamp.png?v=20261114" width="48" height="48" alt="CUGACM">
+        <h1>{{ _('Confirm Access') }}</h1>
+      </div>
+      <form method="POST">
+        {% if UserContext.authn %}
+        <div class="cug-auth-submit sudo-div confirm-div nojs--hide" data-sudo="authn" style="margin-bottom:0.85rem;">
+          <input value="{{ _('Use Authenticator') }}" class="expanded primary button" name="webauthn_verify" type="button">
+          <input type="hidden" name="authnChallenge" value="">
+        </div>
+        {% endif %}
+        {% if UserContext.tfa %}
+        <div class="cug-auth-field sudo-div" data-sudo="tfa" style="display:none">
+          <label for="sudo-tfa">{{ _('Two Factor Authentication Code') }}</label>
+          <input id="sudo-tfa" name="tfa" type="number" class="textbox">
+        </div>
+        {% endif %}
+        <div class="cug-auth-field sudo-div" data-sudo="password">
+          <label for="sudo-pass">{{ _('Password') }}</label>
+          <input id="sudo-pass" name="password" type="password" class="textbox" autofocus>
+        </div>
+        <div class="cug-auth-submit confirm-div">
+          <input value="{{ _('Confirm') }}" class="expanded primary button" name="confirm" type="submit">
+        </div>
+      </form>
+      <div class="cug-auth-notice typo" style="margin-top:1rem;margin-bottom:0;">
+        <p style="margin:0 0 0.35rem;">{{ _('Tip: You are entering sudo mode.')|safe }}</p>
+        <p style="margin:0;">{{ _("After you've performed a sudo-protected action, you'll only be asked to re-authenticate again after a few hours of inactivity.") }}</p>
+      </div>
+      {% if UserContext.authn or UserContext.tfa %}
+      <div class="cug-auth-foot typo nojs--hide" style="text-align:left;">
+        <p style="margin:0 0 0.35rem;"><strong>{{ _('Or use other methods:') }}</strong></p>
+        <ol style="margin:0;">
+          {% if UserContext.authn %}<li class="sudo-switch" data-sudo="authn"><a href="javascript:;">{{ _('Use Authenticator') }}</a></li>{% endif %}
+          {% if UserContext.tfa %}<li class="sudo-switch" data-sudo="tfa"><a href="javascript:;">{{ _('Use TFA Code') }}</a></li>{% endif %}
+          <li class="sudo-switch" data-sudo="password" style="display:none"><a href="javascript:;">{{ _('Use Password') }}</a></li>
+        </ol>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div></div>
+{% endblock %}

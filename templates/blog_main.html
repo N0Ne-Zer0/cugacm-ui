@@ -1,0 +1,39 @@
+{% import "components/nothing.html" as nothing with context %}
+{% import "components/paginator.html" as paginator with context %}
+{% extends "layout/basic.html" %}
+{% block content %}
+<div class="row">
+  <div class="medium-9 columns">
+    <div class="section">
+      <div class="section__header">
+        <h1 class="section__title">{{ _("{0}'s blog").format(udoc.uname) }}</h1>
+      </div>
+      {% if not ddocs.length %}
+        {{ nothing.render('no blog yet...') }}
+      {% else %}
+        <ol class="section__list cug-blog-list">
+          {% set ownerUdoc = udoc %}
+          {% include "partials/blog_list.html" %}
+        </ol>
+        {% if page and dpcount %}{{ paginator.render(page, dpcount) }}{% endif %}
+      {% endif %}
+    </div>
+  </div>
+  <div class="medium-3 columns">
+    <div class="section side">
+      {% if udoc.blogpic %}<div class="discussion-node__bg {{ udoc.blogpic }}"></div>{% endif %}
+      <div class="section__header">
+        <h1 class="section__title">{{ _('Blog Guide') }}</h1>
+      </div>
+      <div class="section__body">
+        {% if handler.user._id == udoc._id %}
+          <p><a href="{{ url('blog_create', uid=udoc._id) }}" class="expanded primary button">{{ _('Create a Post') }}</a></p>
+        {% endif %}
+        {% if ui.getNodes('Nav').map(eval("n=>n.name")).includes('blog_square') %}
+          <p style="margin-bottom:0;"><a href="{{ url('blog_square') }}" class="expanded button">{{ _('Blog Square') }}</a></p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

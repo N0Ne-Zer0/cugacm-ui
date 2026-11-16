@@ -1,0 +1,91 @@
+{% extends "layout/basic.html" %}
+{% import "components/paginator.html" as paginator with context %}
+{% import "components/nothing.html" as nothing with context %}
+{% block content %}
+<div class="row">
+  <div class="medium-12 columns">
+    <div class="section">
+      <div class="section__body no-padding">
+        <div data-fragment-id="ranking">
+          {% if not udocs.length %}
+            {% if page == 1 %}
+              <blockquote class="note">{{ _('The ranking page is not updated realtime.') }}</blockquote>
+            {% endif %}
+          {{ nothing.render('Sorry, there are no users in this domain.') }}
+          {% else %}
+          <table class="data-table">
+            <colgroup>
+              <col class="col--rank">
+              <col class="col--user">
+              <col class="col--rp">
+              {% for key, def in model.rp %}
+                {% if not def.hidden %}
+                  <col class="col--detail rp-{{ key }}">
+                {% endif %}
+              {% endfor %}
+              <col class="col--ac">
+              <col class="col--bio">
+            </colgroup>
+            <thead>
+              <tr>
+                <th class="col--rank">{{ _('Rank') }}</th>
+                <th class="col--user">{{ _('Username') }}</th>
+                <th class="col--rp">{{ _('RP') }}</th>
+                {% for key, def in model.rp %}
+                  {% if not def.hidden %}
+                    <th class="col--detail rp-{{ key }}">{{ _('rpDetailText_' + key) }}</th>
+                  {% endif %}
+                {% endfor %}
+                <th class="col--ac">{{ _('Accept') }}</th>
+                <th class="col--bio">{{ _('Bio') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% set goldEnd = (ucount * 0.1)|round(0, 'ceil') %}
+              {% set silverEnd = goldEnd + (ucount * 0.2)|round(0, 'ceil') %}
+              {% set bronzeEnd = silverEnd + (ucount * 0.3)|round(0, 'ceil') %}
+              {% set perPage = model.system.get('pagination.ranking')|default(50)|int %}
+              {% set firstRank = (page - 1) * perPage + 1 %}
+              {% set lastRank = firstRank + udocs.length - 1 %}
+              {% set myRank = handler.user.rank|default(0) %}
+              {% if handler.user.hasPriv(PRIV.PRIV_USER_PROFILE) and (not myRank or myRank < firstRank or myRank > lastRank) %}
+              <tr class="cug-rank-self">
+                {% set myMedal = 'gold' if myRank > 0 and myRank <= goldEnd else ('silver' if myRank > 0 and myRank <= silverEnd else ('bronze' if myRank > 0 and myRank <= bronzeEnd else '')) %}
+                <td class="col--rank{% if myMedal %} cug-medal--{{ myMedal }}{% endif %}">{{ myRank or '-' }}</td>
+                <td class="col--user">{{ user.render_inline(handler.user) }}</td>
+                <td class="col--rp">{{ handler.user.rp|default(0)|round(0) }}</td>
+                {% for key, def in model.rp %}
+                  {% if not def.hidden %}
+                    <td class="col--detail rp-{{ key }}">{{ handler.user.rpInfo[key]|round if (handler.user.rpInfo|default({}))[key] else '-' }}</td>
+                  {% endif %}
+                {% endfor %}
+                <td class="col--ac">{{ handler.user.nAccept|default(0) }}</td>
+                <td class="col--bio">{{ handler.user.bio|default('')|truncate(64, true)|markdownInline|safe }}</td>
+              </tr>
+              {% endif %}
+              {%- for udoc in udocs -%}
+              <tr{% if handler.user._id == udoc._id %} class="cug-rank-self"{% endif %}>
+                {% set rowRank = (page - 1) * model.system.get('pagination.ranking') + loop.index %}
+                {% set medal = 'gold' if rowRank <= goldEnd else ('silver' if rowRank <= silverEnd else ('bronze' if rowRank <= bronzeEnd else '')) %}
+                <td class="col--rank{% if medal %} cug-medal--{{ medal }}{% endif %}">{{ rowRank }}</td>
+                <td class="col--user">{{ user.render_inline(udoc) }}</td>
+                <td class="col--rp">{{ udoc.rp|default(0)|round(0) }}</td>
+                {% for key, def in model.rp %}
+                  {% if not def.hidden %}
+                    <td class="col--detail rp-{{ key }}">{{ udoc.rpInfo[key]|round if udoc.rpInfo[key] else '-' }}</td>
+                  {% endif %}
+                {% endfor %}
+                <td class="col--ac">{{ udoc.nAccept|default(0) }}</td>
+                <td class="col--bio">{{ udoc.bio|default('')|truncate(64, true)|markdownInline|safe }}</td>
+              </tr>
+              {%- endfor -%}
+            </tbody>
+          </table>
+          {{ paginator.render(page, upcount) }}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

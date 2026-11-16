@@ -1,0 +1,20 @@
+{% set page_name = "homepage" %}
+{% extends "layout/basic.html" %}
+{% import "components/contest.html" as contest with context %}
+{% import "components/problem.html" as problem with context %}
+{% import "components/user.html" as user with context %}
+{% block content %}
+<div class="row">
+  {% for column in contents %}
+    <div class="large-{{ column.width }} columns">
+      {% for s in column.sections %}
+        {# 没有对应模板的板块直接跳过，避免「切换分支/未装插件」时出现 Template xxx not found 占位 #}
+        {% if templateExists("partials/homepage/" + s[0] + ".html") %}
+          {% set payload = s[1] %}
+          {% include "partials/homepage/" + s[0] + ".html" %}
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

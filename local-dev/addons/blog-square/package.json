@@ -1,0 +1,7 @@
+{
+  "name": "hydro-addon-blog-square",
+  "version": "1.0.0",
+  "description": "Site-wide blog square (/blog) and homepage blog feed for Hydro",
+  "main": "index.js",
+  "license": "AGPL-3.0"
+}

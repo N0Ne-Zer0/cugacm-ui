@@ -1,0 +1,74 @@
+{% set page_name = "manage_title" %}
+{% import "components/paginator.html" as paginator with context %}
+{% extends "layout/basic.html" %}
+{% block content %}
+<div class="row">
+  <div class="medium-9 columns">
+    <div class="section">
+      <div class="section__header">
+        <h1 class="section__title">{{ _('Assign Titles') }}</h1>
+      </div>
+      <div class="section__body">
+        <form method="get" class="row">
+          <div class="medium-9 columns">
+            <input type="text" name="q" value="{{ q }}" placeholder="{{ _('Search username') }}">
+          </div>
+          <div class="medium-3 columns">
+            <button type="submit" class="expanded button">{{ _('Search') }}</button>
+          </div>
+        </form>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th class="col--uid">UID</th>
+            <th>{{ _('Username') }}</th>
+            <th>{{ _('Current Title') }}</th>
+            <th>{{ _('Set Title') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {%- for u in udocs -%}
+          <tr>
+            <td class="col--uid">{{ u._id }}</td>
+            <td>{{ u.uname }}</td>
+            <td>
+              {%- if u.badge -%}
+                {%- set b = u.badge.split('#') -%}
+                <span class="user-profile-badge" style="background-color:#{{ b[1] }}{% if b[2] %};color:#{{ b[2] }}{% endif %}">{{ b[0] }}</span>
+              {%- else -%}
+                <span class="text-muted">-</span>
+              {%- endif -%}
+            </td>
+            <td>
+              <form method="post" style="display:flex;gap:8px;align-items:center;margin:0">
+                <input type="hidden" name="uid" value="{{ u._id }}">
+                <select name="titleKey" class="compact">
+                  <option value="">— {{ _('None') }} —</option>
+                  {%- for d in defs -%}
+                  <option value="{{ d.key }}"{% if u.badge and u.badge.split('#')[0] == d.name %} selected{% endif %}>{{ d.name }}</option>
+                  {%- endfor -%}
+                </select>
+                <button type="submit" class="button compact">{{ _('Save') }}</button>
+              </form>
+            </td>
+          </tr>
+          {%- endfor -%}
+        </tbody>
+      </table>
+      {% if page and ucount %}{{ paginator.render(page, ucount) }}{% endif %}
+    </div>
+  </div>
+  <div class="medium-3 columns">
+    <div class="section side">
+      <div class="section__header">
+        <h1 class="section__title">{{ _('User Titles') }}</h1>
+      </div>
+      <div class="section__body typo">
+        <p>{{ _('titles_intro') }}</p>
+        <p><a href="{{ url('title_main') }}" class="expanded button">{{ _('User Titles') }}</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

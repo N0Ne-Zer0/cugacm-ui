@@ -1,0 +1,34 @@
+{% extends "layout/basic.html" %}
+{% block content %}
+<div class="row"><div class="columns">
+  <div class="section cug-auth-section">
+    <div class="section__body">
+      <div class="cug-auth-head">
+        <img src="{{ UiContext.cdn_prefix }}stamp.png?v=20261114" width="48" height="48" alt="CUGACM">
+        <h1>{{ _('Sign Up') }}</h1>
+        <p>{{ model.system.get('server.name') }}</p>
+      </div>
+      <form method="POST" captcha>
+        <div class="cug-auth-field">
+          <label for="reg-mail">{{ _('Email') }}</label>
+          <input id="reg-mail" name="mail" type="text" class="textbox" placeholder="example@cug.edu.cn" autofocus>
+        </div>
+        <div class="cug-auth-notice">
+          {{ _('Registration requires an educational email (.edu).') }}
+        </div>
+        {% if captcha %}
+          <div class="cug-auth-captcha">
+            {{ captcha|safe }}
+          </div>
+        {% endif %}
+        <div class="cug-auth-submit">
+          <input id="submit" type="submit" value="{{ _('Send Verification Email') }}" class="expanded primary button">
+        </div>
+      </form>
+      <div class="cug-auth-foot">
+        {{ _('Already have an account?') }} <a href="{{ url('user_login') }}">{{ _('Login') }}</a>
+      </div>
+    </div>
+  </div>
+</div></div>
+{% endblock %}

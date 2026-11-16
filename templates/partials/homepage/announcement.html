@@ -1,0 +1,21 @@
+{% set hasBulletin = domain.bulletin and not domain.bulletin.includes('欢迎来到 Hydro') and not domain.bulletin.includes('Welcome to Hydro') %}
+<div class="section side cug-announcement">
+  <div class="section__header">
+    <h1 class="section__title">{{ _('Announcement') }}</h1>
+  </div>
+  {% if hasBulletin %}
+    <div class="section__body typo richmedia">
+      {{ domain.bulletin|markdown|safe }}
+    </div>
+  {% else %}
+    <div class="section__body typo">
+      <p class="cug-announcement__empty">{{ _('No announcement yet.') }}</p>
+      {% if handler.user.hasPerm(perm.PERM_EDIT_DOMAIN) %}
+        <p class="cug-announcement__hint">
+          {{ _('Domain maintainers can publish a custom pinned bulletin in') }}
+          <a href="{{ url('domain_edit') }}">{{ _('Domain Settings') }}</a>.
+        </p>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
