@@ -2480,33 +2480,59 @@ body .notification,
   display: none !important;
 }
 
-/* ===== 题面编辑器预览窗格：样例区块与题面详情页对齐 ===== */
+
+/* ===== 题面编辑器预览窗格：样例区块与题面详情页一致 ===== */
 .md-editor-preview .sample.code-toolbar,
 .md-editor-preview .code-toolbar.sample {
-  float: none !important;
-  width: 100% !important;
-  max-width: 100%;
+  position: relative !important;
+  margin: 0 0 1.2rem !important;
   padding: 0 !important;
-  margin: 0 0 1rem !important;
-  position: relative;
 }
 
+/* 复制按钮：与「输入数据 N」标题同一行，贴右侧 */
 .md-editor-preview .sample > .toolbar {
-  position: absolute;
-  top: 0.4rem;
-  right: 0.5rem;
-  z-index: 2;
+  position: absolute !important;
+  top: 0 !important;
+  right: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.35rem !important;
   padding: 0 !important;
+  z-index: 2;
+}
+
+.md-editor-preview .sample > .toolbar .toolbar-item a,
+.md-editor-preview .sample > .toolbar .toolbar-item button {
+  display: inline-block !important;
+  padding: 0.08rem 0.5rem !important;
+  border: 1px solid var(--cug-border) !important;
+  background: var(--cug-surface) !important;
+  color: var(--cug-text-secondary) !important;
+  font-size: 0.72rem !important;
+  line-height: 1.7 !important;
+  text-decoration: none !important;
+  cursor: pointer;
+}
+
+.md-editor-preview .sample > .toolbar .toolbar-item a:hover,
+.md-editor-preview .sample > .toolbar .toolbar-item button:hover {
+  border-color: var(--cug-blue) !important;
+  color: var(--cug-blue) !important;
+}
+
+/* 预览里没有在线 IDE，「填充到自测」不显示 */
+.md-editor-preview .scratchpad-fill-button {
+  display: none !important;
 }
 
 .md-editor-preview .sample pre {
-  margin: 0.45rem 0 0 !important;
-  padding: 0.75rem 3.6rem 0.75rem 0.9rem !important;
+  margin: 0.35rem 0 0 !important;
+  padding: 0.7rem 0.9rem !important;
   background: var(--cug-surface-subtle) !important;
   border: 1px solid var(--cug-border) !important;
   border-left: 3px solid var(--cug-blue) !important;
   white-space: pre;
-  overflow-x: auto;
+  overflow: auto;
   max-height: 320px;
 }
 
@@ -2516,4 +2542,9 @@ body .notification,
   color: var(--cug-text) !important;
   font-size: 0.82rem !important;
   line-height: 1.6;
+}
+
+/* 行号：md-editor 重渲染时会插入，但外层缺 .md-editor-code 导致行号挤进正文 */
+.md-editor-preview [rn-wrapper] {
+  display: none !important;
 }
