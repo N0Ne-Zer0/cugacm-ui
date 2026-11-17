@@ -2479,3 +2479,41 @@ body .notification,
 .md-editor-preview .scratchpad-fill-button {
   display: none !important;
 }
+
+/* ===== 题面编辑器预览窗格：样例区块与题面详情页对齐 ===== */
+.md-editor-preview .sample.code-toolbar,
+.md-editor-preview .code-toolbar.sample {
+  float: none !important;
+  width: 100% !important;
+  max-width: 100%;
+  padding: 0 !important;
+  margin: 0 0 1rem !important;
+  position: relative;
+}
+
+.md-editor-preview .sample > .toolbar {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.5rem;
+  z-index: 2;
+  padding: 0 !important;
+}
+
+.md-editor-preview .sample pre {
+  margin: 0.45rem 0 0 !important;
+  padding: 0.75rem 3.6rem 0.75rem 0.9rem !important;
+  background: var(--cug-surface-subtle) !important;
+  border: 1px solid var(--cug-border) !important;
+  border-left: 3px solid var(--cug-blue) !important;
+  white-space: pre;
+  overflow-x: auto;
+  max-height: 320px;
+}
+
+.md-editor-preview .sample pre code {
+  background: transparent !important;
+  padding: 0 !important;
+  color: var(--cug-text) !important;
+  font-size: 0.82rem !important;
+  line-height: 1.6;
+}
