@@ -2340,3 +2340,130 @@ body .notification,
 .theme--dark .md-editor-preview p {
   color: #cbd5e1 !important;
 }
+
+/* ===== 题面样例：不再渲染「填充到自测」，功能移到在线 IDE ===== */
+.page--problem_detail .problem-content .scratchpad-fill-button {
+  display: none !important;
+}
+
+/* ===== 在线 IDE：面板标题条（自测 / 评测记录） ===== */
+#scratchpad .scratchpad__panel-title {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 1.85rem;
+  line-height: 1.85rem;
+  padding: 0 0.6rem !important;
+  background: var(--cug-surface-subtle) !important;
+  color: var(--cug-text-secondary) !important;
+  border-bottom: 1px solid var(--cug-border);
+  box-shadow: inset 3px 0 0 var(--cug-blue);
+  font-size: 0.78rem !important;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+#scratchpad .scratchpad__panel-title .icon {
+  color: var(--cug-blue);
+}
+
+/* 面板标题右侧的「填入样例」 */
+.cug-sample-bar {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.cug-sample-bar__label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--cug-text-muted);
+}
+
+.cug-sample-bar__btn {
+  padding: 0.02rem 0.45rem;
+  border: 1px solid var(--cug-border);
+  background: var(--cug-surface);
+  color: var(--cug-text-secondary);
+  font-size: 0.7rem;
+  font-weight: 500;
+  line-height: 1.6;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+}
+
+.cug-sample-bar__btn:hover {
+  border-color: var(--cug-blue);
+  color: var(--cug-blue);
+  background: var(--cug-surface-subtle);
+}
+
+/* 自测输入 / 输出区：从灰底改成白底，边界更清楚 */
+#scratchpad .scratchpad__data-input {
+  border-left: 1px solid var(--cug-border) !important;
+  background: var(--cug-surface) !important;
+  color: var(--cug-text) !important;
+  font-size: 0.82rem !important;
+  padding: 0.5rem 0.65rem !important;
+}
+
+#scratchpad .scratchpad__data-input:focus {
+  background: var(--cug-surface) !important;
+  border-left-color: var(--cug-blue) !important;
+}
+/* IDE 工具栏：激活状态改成站点蓝，去掉主题默认的粉色 */
+#scratchpad .scratchpad__toolbar__button.activated {
+  background: var(--cug-blue) !important;
+  border-color: var(--cug-blue) !important;
+  color: #fff !important;
+}
+
+#scratchpad .scratchpad__toolbar__button.activated .icon {
+  color: #fff !important;
+}
+
+#scratchpad .scratchpad__toolbar__button:not(.activated):hover {
+  color: var(--cug-blue);
+}
+
+/* 自测：输入 / 输出之间补一条分隔线 */
+#scratchpad .split-view-view .splitpane-fill > .split-view-container {
+  background: var(--cug-surface);
+}
+
+#scratchpad .scratchpad__data-input {
+  border-right: 1px solid var(--cug-border);
+}
+
+/* IDE 自测标题栏：固定提示 + 样例按钮 */
+.cug-sample-bar__note {
+  font-size: 0.68rem;
+  font-weight: 400;
+  color: var(--cug-text-muted);
+  line-height: 1.5;
+  white-space: normal;
+}
+
+#scratchpad .scratchpad__panel-title {
+  flex-wrap: wrap;
+}
+
+/* IDE 工具栏固定提示：占满第二行，任何语言、任何面板状态下都看得到 */
+#scratchpad .scratchpad__toolbar {
+  flex-wrap: wrap;
+}
+
+#scratchpad .cug-ide-hint {
+  order: 99;
+  flex: 1 1 100%;
+  margin: 0;
+  padding: 0.15rem 0.7rem 0.2rem;
+  border-top: 1px solid var(--cug-border);
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--cug-text-muted);
+  line-height: 1.5;
+  white-space: normal;
+  cursor: help;
+}
