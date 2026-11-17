@@ -45,7 +45,7 @@
   {% else %}
     <link rel="stylesheet" media="all" href="{{ UiContext.cdn_prefix }}theme-{{ global.Hydro.version['ui-default'] }}.css">
   {% endif %}
-  <link rel="stylesheet" media="all" href="{{ UiContext.cdn_prefix }}custom.css?v=20261117-6">
+  <link rel="stylesheet" media="all" href="{{ UiContext.cdn_prefix }}custom.css?v=20261117-9">
   {% if not isIE(handler.request.headers['user-agent']) and not handler.session.legacy %}
     <script>
       var _htmlNode = document.documentElement;
@@ -169,7 +169,8 @@
       (function () {
         function enhanceProblemPage() {
           // 首行守卫：非题目详情页直接阻断退出
-          if (!document.querySelector('.problem-content')) return;
+          // 题面详情页与题目编辑器的预览窗格都需要这些增强
+          if (!document.querySelector('.problem-content') && !document.querySelector('.md-editor-preview')) return;
 
           var isZh = (document.documentElement.lang || 'zh').toLowerCase().indexOf('zh') !== -1;
 
@@ -190,7 +191,7 @@
           }
 
           // 2. 样例与代码块增强：按钮文本与对应语言 Tooltip
-          var toolbars = document.querySelectorAll('.problem-content .code-toolbar');
+          var toolbars = document.querySelectorAll('.problem-content .code-toolbar, .md-editor-preview .code-toolbar');
           for (var j = 0; j < toolbars.length; j++) {
             var tb = toolbars[j];
             var pre = tb.querySelector('pre');
