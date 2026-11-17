@@ -2467,3 +2467,15 @@ body .notification,
   white-space: normal;
   cursor: help;
 }
+
+/* ===== 题面编辑器的预览窗格：与题面页保持一致，并修掉行号错位 ===== */
+/* md-editor 重新渲染时会给每行插入 [rn-wrapper] 行号，但外层缺少 .md-editor-code
+   包裹，grid 规则不生效，行号就挤进正文（"1" + "4 6" 变成 "14 6"）。直接不显示。 */
+.md-editor-preview [rn-wrapper] {
+  display: none !important;
+}
+
+/* 预览里「填充到自测」没有对应的在线 IDE，隐藏 */
+.md-editor-preview .scratchpad-fill-button {
+  display: none !important;
+}
