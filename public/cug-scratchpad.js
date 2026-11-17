@@ -161,6 +161,17 @@
     });
   }
 
+  /* ---------- 7. 提交流程会自动打开评测记录：这里保证不同时展开 ---------- */
+  function enforceExclusive() {
+    var p = document.querySelector('.scratchpad__toolbar__button[data-global-hotkey="alt+p"]');
+    var r = document.querySelector('.scratchpad__toolbar__button[data-global-hotkey="alt+r"]');
+    if (!p || !r) return;
+    if (p.classList.contains('activated') && r.classList.contains('activated')) {
+      // 递交/自测后 Hydro 会自动展开评测记录，此时收起重叠的自测面板
+      p.click();
+    }
+  }
+
   /* ---------- 调度 ---------- */
   var scheduled = false;
   function enhance() {
@@ -169,6 +180,7 @@
       ensureSampleBar();
       ensureToolbarHint();
       bindToggles();
+      enforceExclusive();
     } catch (e) {
       if (window.console) console.warn('[cug-scratchpad]', e);
     }
