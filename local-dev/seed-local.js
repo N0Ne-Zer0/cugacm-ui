@@ -11,7 +11,8 @@ const INIT_URL = 'http://127.0.0.1:8889/';
 const HOMEPAGE_YAML = [
   '- width: 9',
   '  bulletin: true',
-  '  contest: 5',
+  '  contest: 2',
+  '  training: 6',
   '  blog: 5',
   '  discussion: 20',
   '- width: 3',

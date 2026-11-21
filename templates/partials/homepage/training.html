@@ -1,1 +1,50 @@
-{# Training section disabled #}
+{% set tdocs = payload[0] %}
+{% set tsdict = payload[1] %}
+{% if tdocs.length %}
+  <div class="section page--training_main">
+    <div class="section__header">
+      <h1 class="section__title">{{ _('Training') }}</h1>
+    </div>
+    <ol class="section__list training__list">
+      {%- for tdoc in tdocs -%}
+        {%- set tst = tsdict[tdoc.docId] or {} -%}
+        {%- set pids = model.training.getPids(tdoc.dag) -%}
+        <li class="section__list__item training__item">
+          <div class="media">
+            <div class="media__left medium">
+              <div class="training__participants numbox">
+                <div class="numbox__num large">{{ pids|length }}</div>
+                <div class="numbox__text">{{ _('Problems') }}</div>
+              </div>
+            </div>
+            <div class="media__body medium">
+              <h1 class="training__title"><a href="{{ url('training_detail', tid=tdoc.docId) }}" data-emoji-enabled>{{ tdoc.title }}</a></h1>
+              <ul class="supplementary list training__progress">
+                <li>
+                  <span class="icon icon-flag text-blue"></span> {{ _('{0} sections').format(tdoc.dag|length) }}
+                </li>
+                <li>
+                {% if tst['enroll'] %}
+                  {% if tst['done'] or not pids.length %}
+                  <span class="icon icon-check text-green"></span>
+                  <span class="training-status--text done">{{ _('Completed') }} 100%</span>
+                  {% else %}
+                  <span class="icon icon-trending-up text-blue"></span>
+                  <span class="training-status--text progress">{{ _('Completed') }} {{ (100 * (tst['donePids']|length) / (pids|length))|round|int }}%</span>
+                  {% endif %}
+                {% elif handler.user.hasPriv(PRIV.PRIV_USER_PROFILE) %}
+                  <span class="icon icon-user--multiple"></span>
+                  <span class="training-status--text outside">{{ _('Not Enrolled') }}</span>
+                {% endif %}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </li>
+      {%- endfor -%}
+    </ol>
+    <ul class="pager pager-bottom"><li>
+      <a class="pager__item next link" href="{{ url('training_main') }}">{{ _('More') }} &gt;</a>
+    </li></ul>
+  </div>
+{% endif %}
