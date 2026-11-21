@@ -5,10 +5,10 @@
   </a>
 </li>
 {%- endmacro -%}
-{# 主导航固定顺序：博客前置，训练与头衔不在导航中展示（头衔入口移至首页） #}
-{%- set navOrder = ['homepage', 'problem_main', 'contest_main', 'homework_main', 'discussion_main', 'blog_square', 'record_main', 'ranking', 'domain_dashboard', 'manage_dashboard'] -%}
+{# 主导航固定顺序：博客前置；头衔不在导航中展示（入口在首页） #}
+{%- set navOrder = ['homepage', 'problem_main', 'contest_main', 'homework_main', 'training_main', 'discussion_main', 'blog_square', 'record_main', 'ranking', 'domain_dashboard', 'manage_dashboard'] -%}
 {%- set navNodes = overrideNav|default(ui.getNodes('Nav')) -%}
-{%- set navHidden = ['training_main', 'title_main'] -%}
+{%- set navHidden = ['title_main'] -%}
 <nav class="nav slideout-menu" id="menu">
   <div class="row"><div class="columns clearfix">
     <ol class="nav__list nav__list--main clearfix">

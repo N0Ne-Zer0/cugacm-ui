@@ -15,8 +15,7 @@
           {% if node['title'].split('\n')[1] %}<h4>{{ node['title'].split('\n')[1] }}</h4>{% endif %}
         </div>
         <div class="float-right">
-          <h1 class="section__title training-section-status--text {% if nsdict[node['_id']]['isDone'] %}done{% elif nsdict[node['_id']]['isProgress'] %}progress{% elif nsdict[node['_id']]['isOpen'] %}open{% else %}invalid{% endif %}">
-            <span class="icon training-section-status--icon {% if nsdict[node['_id']]['isDone'] %}done{% elif nsdict[node['_id']]['isProgress'] %}progress{% elif nsdict[node['_id']]['isOpen'] %}open{% else %}invalid{% endif %}"></span>
+          <span class="cug-status-tag {% if nsdict[node['_id']]['isDone'] %}cug-status-tag--done{% elif nsdict[node['_id']]['isProgress'] %}cug-status-tag--live{% elif nsdict[node['_id']]['isOpen'] %}cug-status-tag--ready{% else %}cug-status-tag--done{% endif %}">
             {% if nsdict[node['_id']]['isDone'] %}
               {{ _('Completed') }}
             {% elif nsdict[node['_id']]['isProgress'] %}
@@ -26,7 +25,7 @@
             {% else %}
               {{ _('Invalid') }}
             {% endif %}
-          </h1>
+          </span>
         </div>
       </div>
       <div class="section__body">
