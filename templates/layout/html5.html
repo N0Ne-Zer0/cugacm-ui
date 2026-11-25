@@ -45,7 +45,7 @@
   {% else %}
     <link rel="stylesheet" media="all" href="{{ UiContext.cdn_prefix }}theme-{{ global.Hydro.version['ui-default'] }}.css">
   {% endif %}
-  <link rel="stylesheet" media="all" href="{{ UiContext.cdn_prefix }}custom.css?v=20261117-12">
+  <link rel="stylesheet" media="all" href="{{ UiContext.cdn_prefix }}custom.css?v=20261125-4">
   {% if not isIE(handler.request.headers['user-agent']) and not handler.session.legacy %}
     <script>
       var _htmlNode = document.documentElement;
@@ -165,17 +165,17 @@
   {% endif %}
 
     <script>
-      /* 题面页面增强（仅限题目详情页）：二级标题转 h3、按钮实体化、语言 Tooltip */
+      /* 题面页面增强（普通题面、比赛题面、作业题面与编辑器预览统一生效）：二级标题转 h3、按钮实体化、语言 Tooltip */
       (function () {
+        var rafScheduled = false;
+
         function enhanceProblemPage() {
-          // 首行守卫：非题目详情页直接阻断退出
-          // 题面详情页与题目编辑器的预览窗格都需要这些增强
           if (!document.querySelector('.problem-content') && !document.querySelector('.md-editor-preview')) return;
 
           var isZh = (document.documentElement.lang || 'zh').toLowerCase().indexOf('zh') !== -1;
 
           // 1. 二级标题使用 <h3>：将 .sample h2 转换为 h3
-          var sampleH2s = document.querySelectorAll('.problem-content .sample h2');
+          var sampleH2s = document.querySelectorAll('.problem-content .sample h2, .md-editor-preview .sample h2');
           for (var i = 0; i < sampleH2s.length; i++) {
             var h2 = sampleH2s[i];
             if (h2.dataset.converted === 'true') continue;
@@ -190,90 +190,63 @@
             h2.parentNode.replaceChild(h3, h2);
           }
 
-          // 2. 样例与代码块增强：按钮文本与对应语言 Tooltip
+          // 2. 样例与代码块增强：复制按钮中文化与右上角复制提示（不挂载易错位的绝对定位 Tooltip）
           var toolbars = document.querySelectorAll('.problem-content .code-toolbar, .md-editor-preview .code-toolbar');
           for (var j = 0; j < toolbars.length; j++) {
             var tb = toolbars[j];
-            var pre = tb.querySelector('pre');
-            var code = pre ? pre.querySelector('code') : null;
-            var langClass = (code && code.className ? code.className : (pre && pre.className ? pre.className : ''));
-            var match = langClass.match(/language-([a-zA-Z0-9_-]+)/);
-            var rawLang = match ? match[1] : '';
-
-            var langName = '文本';
-            if (rawLang.indexOf('input') === 0) {
-              langName = isZh ? ('输入数据 ' + rawLang.replace('input', '')) : ('Input ' + rawLang.replace('input', ''));
-            } else if (rawLang.indexOf('output') === 0) {
-              langName = isZh ? ('输出数据 ' + rawLang.replace('output', '')) : ('Output ' + rawLang.replace('output', ''));
-            } else if (rawLang === 'cpp' || rawLang === 'c++') {
-              langName = 'C++';
-            } else if (rawLang === 'python' || rawLang === 'py') {
-              langName = 'Python';
-            } else if (rawLang === 'java') {
-              langName = 'Java';
-            } else if (rawLang === 'c') {
-              langName = 'C';
-            } else if (rawLang) {
-              langName = rawLang.toUpperCase();
-            } else {
-              langName = isZh ? '纯文本' : 'Plain Text';
-            }
-
-            // 给代码块本身增加语言 Tooltip
-            if (pre && !pre.getAttribute('data-tooltip')) {
-              pre.setAttribute('data-tooltip', isZh ? ('语言: ' + langName) : ('Language: ' + langName));
-              pre.setAttribute('data-tooltip-pos', 'top');
-            }
-
-            // 复制按钮（替换为真正的按钮外观 + 对应语言 Tooltip）
-            var copyLink = tb.querySelector('.toolbar-item a:not(.scratchpad-fill-button a), .copy-to-clipboard-button, .toolbar-item button');
+            var copyLink = tb.querySelector('.toolbar-item:not(.scratchpad-fill-button) a, .copy-to-clipboard-button, .toolbar-item:not(.scratchpad-fill-button) button');
             if (copyLink && !copyLink.dataset.enhanced) {
               copyLink.dataset.enhanced = 'true';
               copyLink.classList.add('cug-btn', 'cug-btn--copy');
               if (isZh && (copyLink.textContent.trim() === 'Copy' || copyLink.textContent.trim() === 'copy')) {
                 copyLink.textContent = '复制';
               }
-              copyLink.setAttribute('data-tooltip', isZh ? '复制到剪贴板' : 'Copy to clipboard');
-              copyLink.setAttribute('data-tooltip-pos', 'top');
-            }
-
-            // 填充到自测按钮（替换为真正的按钮外观 + 对应语言 Tooltip）
-            var fillLink = tb.querySelector('.scratchpad-fill-button a, .scratchpad-fill-button button');
-            if (fillLink && !fillLink.dataset.enhanced) {
-              fillLink.dataset.enhanced = 'true';
-              fillLink.classList.add('cug-btn', 'cug-btn--fill');
-              if (isZh) {
-                fillLink.textContent = '填充到自测';
-              }
-              fillLink.setAttribute('data-tooltip', isZh ? '填入在线编程自测 (F9)' : 'Fill to scratchpad pretest (F9)');
-              fillLink.setAttribute('data-tooltip-pos', 'top');
+              copyLink.removeAttribute('data-tooltip');
+              copyLink.removeAttribute('data-tooltip-pos');
+              copyLink.addEventListener('click', function () {
+                if (window.cugToast) {
+                  window.cugToast.show(isZh ? '已复制到剪贴板' : 'Copied to clipboard', { duration: 2200, persist: false });
+                }
+              });
             }
           }
         }
 
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', enhanceProblemPage);
-        } else {
-          enhanceProblemPage();
+        function scheduleEnhance() {
+          if (rafScheduled) return;
+          rafScheduled = true;
+          var run = function () {
+            rafScheduled = false;
+            enhanceProblemPage();
+          };
+          if (window.requestAnimationFrame) window.requestAnimationFrame(run);
+          else setTimeout(run, 16);
         }
-        window.addEventListener('load', enhanceProblemPage);
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', scheduleEnhance);
+        } else {
+          scheduleEnhance();
+        }
+        window.addEventListener('load', scheduleEnhance);
 
         if (window.$) {
-          $(document).on('vjContentNew', enhanceProblemPage);
+          $(document).on('vjContentNew', scheduleEnhance);
         }
 
-        var mo = new MutationObserver(function () {
-          enhanceProblemPage();
-        });
-        if (document.body) {
-          mo.observe(document.body, { childList: true, subtree: true });
-        } else {
-          document.addEventListener('DOMContentLoaded', function () {
+        var mo = new MutationObserver(scheduleEnhance);
+        function startObserver() {
+          if (document.querySelector('.problem-content') || document.querySelector('.md-editor-preview')) {
             mo.observe(document.body, { childList: true, subtree: true });
-          });
+          }
+        }
+        if (document.body) {
+          startObserver();
+        } else {
+          document.addEventListener('DOMContentLoaded', startObserver);
         }
       })();
     </script>
-  <script src="{{ UiContext.cdn_prefix }}cug-scratchpad.js?v=20261117-7"></script>
+  <script src="{{ UiContext.cdn_prefix }}cug-scratchpad.js?v=20261125-1"></script>
 </body>
 </html>

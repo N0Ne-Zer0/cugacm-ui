@@ -8,16 +8,16 @@
   </a>
   <div>
     <ol class="menu">
-      <li class="menu__item"><a class="menu__link" href="{{ url('contest_detail', tid=tdoc.docId) }}">
+      <li class="menu__item"><a class="menu__link{% if page_name == 'contest_detail' %} active{% endif %}" href="{{ url('contest_detail', tid=tdoc.docId) }}">
         <span class="icon icon-award"></span> {{ _('View Contest') }}
       </a></li>
-      <li class="menu__item"><a class="menu__link" href="{{ url('contest_manage', tid=tdoc.docId) }}">
+      <li class="menu__item"><a class="menu__link{% if page_name == 'contest_manage' %} active{% endif %}" href="{{ url('contest_manage', tid=tdoc.docId) }}">
         <span class="icon icon-settings"></span> {{ _('Contest Management') }}
       </a></li>
-      <li class="menu__item"><a class="menu__link" href="{{ url('contest_edit', tid=tdoc.docId) }}">
+      <li class="menu__item"><a class="menu__link{% if page_name == 'contest_edit' %} active{% endif %}" href="{{ url('contest_edit', tid=tdoc.docId) }}">
         <span class="icon icon-edit"></span> {{ _('Edit Contest') }}
       </a></li>
-      <li class="menu__item"><a class="menu__link" href="{{ url('contest_user', tid=tdoc.docId) }}">
+      <li class="menu__item"><a class="menu__link{% if page_name == 'contest_user' %} active{% endif %}" href="{{ url('contest_user', tid=tdoc.docId) }}">
         <span class="icon icon-user"></span> {{ _('Attendee Manage') }}
       </a></li>
       <li class="menu__item"><a class="menu__link" href="{{ url('contest_code', tid=tdoc.docId) }}" data-no-instant>
@@ -26,31 +26,59 @@
       <li class="menu__item"><a class="menu__link" href="{{ url('record_main', query={tid:tdoc.docId}) }}">
         <span class="icon icon-flag"></span> {{ _('All Submissions') }}
       </a></li>
-      <li class="menu__item"><a class="menu__link" href="{{ url('contest_balloon', tid=tdoc.docId) }}">
+      <li class="menu__item"><a class="menu__link{% if page_name == 'contest_balloon' %} active{% endif %}" href="{{ url('contest_balloon', tid=tdoc.docId) }}">
         <span class="icon icon-balloon"></span> {{ _('Balloon Status') }}
       </a></li>
-      <li class="menu__item"><a class="menu__link" href="{{ url('contest_clarification', tid=tdoc.docId) }}">
+      <li class="menu__item"><a class="menu__link{% if page_name == 'contest_clarification' %} active{% endif %}" href="{{ url('contest_clarification', tid=tdoc.docId) }}">
         <span class="icon icon-comment--text"></span> {{ _('Contest Clarifications') }}
       </a></li>
       <li class="menu__seperator"></li>
     </ol>
   </div>
-  <div class="section__body typo">
-    <dl class="large horizontal">
-      <dt>{{ _('Status') }}</dt>
-      <dd>
-        {{ _(model.contest.statusText(tdoc, tsdoc)) }}
-        {% if tsdoc.attend %}
-          ({{ _('Attended') }})
-        {% endif %}
-      </dd>
-      <dt>{{ _('Rule') }}</dt><dd>{{ model.contest.RULES[tdoc.rule].TEXT }}</dd>
-      <dt>{{ _('Problem') }}</dt><dd>{{ tdoc.pids.length }}</dd>
-      <dt>{{ _('Start at') }}</dt><dd>{{ contest.render_time(tsdoc.startAt or tdoc.beginAt) }}</dd>
-      <dt>{{ _('End at') }}</dt><dd>{{ contest.render_time(tsdoc.endAt or tdoc.endAt) }}</dd>
-      <dt>{{ _('Duration') }}</dt><dd>{{ contest.render_duration(tdoc) }} {{ _('hour(s)') }}</dd>
-      <dt>{{ _('Host') }}</dt><dd>{{ user.render_inline(owner_udoc, badge=false) }}</dd>
-      <dt>{{ _('Partic.') }}</dt><dd>{{ tdoc['attend']|default(0) }}</dd>
-    </dl>
+  <div class="section__body">
+    <div class="cug-sidebar-info-list">
+      <div class="cug-info-row">
+        <span class="cug-info-label">{{ _('Status') }}</span>
+        <span class="cug-info-value">
+          {% if model.contest.isOngoing(tdoc, tsdoc) %}
+            <span class="cug-status-tag cug-status-tag--live">{{ _(model.contest.statusText(tdoc, tsdoc)) }}</span>
+          {% elif model.contest.isNotStarted(tdoc) %}
+            <span class="cug-status-tag cug-status-tag--ready">{{ _(model.contest.statusText(tdoc, tsdoc)) }}</span>
+          {% else %}
+            <span class="cug-status-tag cug-status-tag--done">{{ _(model.contest.statusText(tdoc, tsdoc)) }}</span>
+          {% endif %}
+        </span>
+      </div>
+      <div class="cug-info-row">
+        <span class="cug-info-label">{{ _('Rule') }}</span>
+        <span class="cug-info-value">{{ _(model.contest.RULES[tdoc.rule].TEXT) }}</span>
+      </div>
+      <div class="cug-info-row">
+        <span class="cug-info-label">{{ _('Problem') }}</span>
+        <span class="cug-info-value font-mono">{{ tdoc.pids.length }}</span>
+      </div>
+      <div class="cug-info-row">
+        <span class="cug-info-label">{{ _('Start at') }}</span>
+        <span class="cug-info-value">{{ contest.render_time((tsdoc and tsdoc.startAt) or tdoc.beginAt) }}</span>
+      </div>
+      <div class="cug-info-row">
+        <span class="cug-info-label">{{ _('End at') }}</span>
+        <span class="cug-info-value">{{ contest.render_time((tsdoc and tsdoc.endAt) or tdoc.endAt) }}</span>
+      </div>
+      <div class="cug-info-row">
+        <span class="cug-info-label">{{ _('Duration') }}</span>
+        <span class="cug-info-value">{{ contest.render_duration(tdoc) }} {{ _('hour(s)') }}</span>
+      </div>
+      {% if owner_udoc %}
+      <div class="cug-info-row">
+        <span class="cug-info-label">{{ _('Host') }}</span>
+        <span class="cug-info-value">{{ user.render_inline(owner_udoc, badge=false) }}</span>
+      </div>
+      {% endif %}
+      <div class="cug-info-row">
+        <span class="cug-info-label">{{ _('Partic.') }}</span>
+        <span class="cug-info-value font-mono">{{ tdoc['attend']|default(0) }}</span>
+      </div>
+    </div>
   </div>
 </div>

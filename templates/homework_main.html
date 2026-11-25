@@ -25,8 +25,8 @@
                 <option disabled>{{ _('No group available') }}</option>
               {%- endif -%}
             </select>
-            <button type="submit" class="compact button hasjs--hide">
-              {{ _('Search') }}
+            <button type="submit" class="primary compact button">
+              <span class="icon icon-search"></span> {{ _('Search') }}
             </button>
           </form>
         {% if handler.user.hasPerm(perm.PERM_CREATE_HOMEWORK) %}

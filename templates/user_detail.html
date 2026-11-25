@@ -92,48 +92,99 @@
           </div>
         </div>
       </div>
-      <div class="profile-content">
-        <div class="section__tab-container immersive memo">
-          <ul class="section__tabs">
+      <div class="cug-profile-tabs" id="cug-profile-tabs">
+        <div class="cug-profile-tab-bar nojs--hide" role="tablist"></div>
+        <ul class="cug-profile-tab-panels">
+          <li class="section__tab-item is-active">
+            <h1 class="section__tab-title">{{ _('Bio') }}</h1>
+            <div class="section__tab-main">
+            {% if not udoc.bio %}
+              {{ nothing.render("This person is lazy and didn't write anything.") }}
+            {% else %}
+              <div class="section__body typo richmedia">
+                {{ udoc.bio|default('')|markdown|safe }}
+              </div>
+            {% endif %}
+            </div>
+          </li>
+          {% if pdocs.length %}
             <li class="section__tab-item">
-              <h1 class="section__tab-title">{{ _('Bio') }}</h1>
+              <h1 class="section__tab-title">{{ _('Accepted Problems') }}</h1>
               <div class="section__tab-main">
-              {% if not udoc.bio %}
-                {{ nothing.render("This person is lazy and didn't write anything.") }}
-              {% else %}
-                <div class="section__body typo richmedia">
-                  {{ udoc.bio|default('')|markdown|safe }}
+                <div class="section__body no-media">
+                  <ul class="cug-profile-solved-grid">
+                    {% for pdoc in pdocs %}
+                      <li class="cug-profile-solved-item">{{ problem.render_problem_title(pdoc, show_tags=false, small=true) }}</li>
+                    {% endfor %}
+                  </ul>
                 </div>
-              {% endif %}
               </div>
             </li>
-            {% if pdocs.length %}
-              <li class="section__tab-item">
-                <h1 class="section__tab-title">{{ _('Accepted Problems') }}</h1>
-                <div class="section__tab-main">
-                  <div class="typo section__body no-media">
-                    {% set _mark = Math.ceil(pdocs.length/4) %}
-                    {% macro col(pdocs) %}
-                      <div class="medium-3 columns"><ul>
-                        {% for pdoc in pdocs %}
-                          <li>{{ problem.render_problem_title(pdoc, show_tags=false, small=true) }}</li>
-                        {% endfor %}
-                      </ul></div>
-                    {% endmacro %}
-                    <div class="row">
-                      {{ col(pdocs.slice(0, _mark)) }}
-                      {{ col(pdocs.slice(_mark, _mark*2)) }}
-                      {{ col(pdocs.slice(_mark*2, _mark*3)) }}
-                      {{ col(pdocs.slice(_mark*3)) }}
-                    </div>
-                  </div>
-                </div>
-              </li>
-            {% endif %}
-            {% for page in findSubModule('partials/user_detail/') %}{% include page %}{% endfor %}
-          </ul>
-        </div>
+          {% endif %}
+          {% for page in findSubModule('partials/user_detail/') %}{% if not page.endsWith('.source') %}{% include page %}{% endif %}{% endfor %}
+        </ul>
       </div>
+      <script>
+        (function () {
+          var root = document.getElementById('cug-profile-tabs');
+          if (!root) return;
+          var bar = root.querySelector('.cug-profile-tab-bar');
+          var panels = Array.prototype.slice.call(root.querySelectorAll('.cug-profile-tab-panels > .section__tab-item'));
+          if (!bar || !panels.length) return;
+
+          var buttons = [];
+          panels.forEach(function (panel, idx) {
+            var titleEl = panel.querySelector('.section__tab-title');
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'cug-profile-tab-btn';
+            btn.setAttribute('role', 'tab');
+            btn.setAttribute('aria-selected', 'false');
+            btn.textContent = titleEl ? titleEl.textContent.trim() : ('Tab ' + (idx + 1));
+            btn.addEventListener('click', function () {
+              activate(idx, true);
+            });
+            bar.appendChild(btn);
+            buttons.push(btn);
+          });
+
+          function getHashIndex() {
+            var m = /^#tab-(\d+)$/.exec(window.location.hash || '');
+            if (!m) return 0;
+            var n = parseInt(m[1], 10);
+            return (!isNaN(n) && n >= 0 && n < panels.length) ? n : 0;
+          }
+
+          function activate(idx, updateHash) {
+            if (idx < 0 || idx >= panels.length) idx = 0;
+            for (var i = 0; i < panels.length; i++) {
+              var on = i === idx;
+              panels[i].classList.toggle('is-active', on);
+              buttons[i].classList.toggle('is-active', on);
+              buttons[i].setAttribute('aria-selected', on ? 'true' : 'false');
+            }
+            if (updateHash) {
+              var nextHash = '#tab-' + idx;
+              if (window.location.hash !== nextHash) {
+                if (window.history && window.history.replaceState) {
+                  window.history.replaceState(null, '', nextHash);
+                } else {
+                  window.location.hash = nextHash;
+                }
+              }
+            }
+            if (window.$) {
+              var main = panels[idx].querySelector('.section__tab-main');
+              if (main) window.$(main).trigger('vjContentShow');
+            }
+          }
+
+          activate(getHashIndex(), false);
+          window.addEventListener('hashchange', function () {
+            activate(getHashIndex(), false);
+          });
+        })();
+      </script>
     </div>
   </div>
   <div class="medium-3 columns">

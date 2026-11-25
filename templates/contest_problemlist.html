@@ -73,14 +73,20 @@
               <td class="col--score">{{ tdoc.score[pid]|default(100) }}</td>
             {% endif %}
               <td class="col--problem col--problem-name">
-                {{ problem.render_problem_title(pdict[pid], tdoc, alphabetic=true) }}
-                {% if pdict[pid].config.type != 'objective' and pdict[pid].config.type != 'submit_answer' %}
-                  <span class="problem__tag-item icon icon-stopwatch" style="font-size: .75rem;margin: 0;padding: 0 5px!important;">{{ pdict[pid].config.timeMax if pdict[pid].config.timeMax == pdict[pid].config.timeMin else pdict[pid].config.timeMin+'~'+pdict[pid].config.timeMax }}ms</span>
-                  <span class="problem__tag-item icon icon-comparison" style="font-size: .75rem;margin: 0;padding: 0 5px!important;">{{ pdict[pid].config.memoryMax if pdict[pid].config.memoryMax == pdict[pid].config.memoryMin else pdict[pid].config.memoryMin+'~'+pdict[pid].config.memoryMax }}MiB</span>
-                {% endif %}
-                {% if pdict[pid].config.type != 'objective' %}
-                  <a href="{{ url('problem_submit', pid=pid, query={tid:tdoc.docId}) }}" target="_blank" class="typo-a" style="float: right;"><span class="icon icon-send">{{ _('Submit') }}</span></a>
-                {% endif %}
+                <div class="cug-contest-prob-cell">
+                  <div class="cug-contest-prob-cell__title">
+                    {{ problem.render_problem_title(pdict[pid], tdoc, alphabetic=true, show_tags=false) }}
+                  </div>
+                  <div class="cug-contest-prob-cell__right">
+                    {% if pdict[pid].config.type != 'objective' and pdict[pid].config.type != 'submit_answer' %}
+                      <span class="cug-limit-chip"><span class="icon icon-stopwatch"></span>{{ pdict[pid].config.timeMax if pdict[pid].config.timeMax == pdict[pid].config.timeMin else pdict[pid].config.timeMin+'~'+pdict[pid].config.timeMax }}ms</span>
+                      <span class="cug-limit-chip"><span class="icon icon-comparison"></span>{{ pdict[pid].config.memoryMax if pdict[pid].config.memoryMax == pdict[pid].config.memoryMin else pdict[pid].config.memoryMin+'~'+pdict[pid].config.memoryMax }}MiB</span>
+                    {% endif %}
+                    {% if pdict[pid].config.type != 'objective' %}
+                      <a href="{{ url('problem_submit', pid=pid, query={tid:tdoc.docId}) }}" target="_blank" class="cug-contest-submit-btn"><span class="icon icon-send"></span>{{ _('Submit') }}</a>
+                    {% endif %}
+                  </div>
+                </div>
               </td>
             </tr>
           {%- endfor -%}
@@ -205,6 +211,7 @@
             </div>
           </div>
           <button type="submit" class="rounded primary button">{{ _('Submit') }}</button>
+        </form>
       </div>
       {% endif %}
     </div>
@@ -215,7 +222,7 @@
       <div class="section__header">
         <h1 class="section__title">{{_('Materials')}}</h1>
       </div>
-      <ol>
+      <ol class="menu">
         {% for file in tdoc.privateFiles %}
         <li class="menu__item">
           <a class="menu__link" href="{{ url('contest_file_download', { tid: tdoc.docId, filename: file.name, type: 'private' }) }}">{{ file.name }}</a>

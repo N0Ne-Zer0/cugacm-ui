@@ -672,6 +672,7 @@ pager_next: 下一页 ›
 pager_previous: ‹ 前一页
 Params: 参数
 Partic.: 参赛人数
+Participation: 参赛状态
 Password reset mail has been sent to your email.: 密码重置邮件已发送到您的电子邮箱。
 Password: 密码
 Passwords don't match.: 验证密码不匹配。
@@ -1156,10 +1157,10 @@ Practice: 练习
 Contests: 比赛
 Ranking: 排名
 CUGACM Association: 地大 ACM-ICPC 协会
-'Program the Future World. Online Judge & Training Platform of CUG ACM-ICPC Association.': 'Program the Future World · 中国地质大学（武汉）ACM-ICPC 协会在线评测平台'
-CUG ACM-ICPC Association Online Judge: 中国地质大学（武汉）ACM-ICPC 协会在线评测系统
+'Program the Future World. Online Judge & Training Platform of CUG ACM-ICPC Association.': 'Program the Future World · 地大 ACM-ICPC 协会在线评测平台'
+CUG ACM-ICPC Association Online Judge: 地大 ACM-ICPC 协会在线评测系统
 Platform Guide: 平台使用说明
-'Welcome to the online judge platform of CUG ACM-ICPC Association.': '欢迎使用中国地质大学（武汉）ACM-ICPC 协会在线评测系统。'
+'Welcome to the online judge platform of CUG ACM-ICPC Association.': '欢迎使用地大 ACM-ICPC 协会在线评测系统。'
 'Browse problems by ID, tag, or difficulty and submit code online.': '按题号、标签或难度检索题目，在线提交代码并查看评测结果'
 'Join campus contests, practice rounds, and weekly assignments.': '参与校内程序设计竞赛、练习赛与日常作业'
 'View submission statuses, compiler environments, and I/O conventions.': '查看评测队列与记录，了解编译器版本、时空限制与标准输入输出规范'
@@ -1168,8 +1169,8 @@ Problem ID / Title / Tag: 题号 / 标题 / 标签
 Domestic Platforms: 国内平台
 International Contests: 国际赛事
 Tools & References: 工具与文档
-CUG ACM-ICPC Association: 中国地质大学（武汉）ACM-ICPC 协会
-'Founded in 2003 and supported by the School of Computer Science, the CUG ACM-ICPC Association fosters algorithmic thinking, software engineering practice, and collaborative problem solving across the university.': '中国地质大学（武汉）ACM-ICPC 协会成立于 2003 年，依托计算机与智能学院建设，面向全校热爱算法与程序设计的同学，长期开展算法科普、竞赛实训与团队培养。'
+CUG ACM-ICPC Association: 地大 ACM-ICPC 协会
+'Founded in 2003 and supported by the School of Computer Science, the CUG ACM-ICPC Association fosters algorithmic thinking, software engineering practice, and collaborative problem solving across the university.': '地大 ACM-ICPC 协会成立于 2003 年，依托计算机与智能学院建设，面向全校热爱算法与程序设计的同学，长期开展算法科普、竞赛实训与团队培养。'
 Daily Practice: 日常练习
 'Providing problem sets, homework assignments, and online judging for C/C++, Java, Python, and other languages.': '提供公开题库、课程/队内作业与在线代码评测服务，支持 C/C++、Java、Python 等多种语言'
 Campus & Regional Contests: 校内外赛事
@@ -1177,7 +1178,7 @@ Campus & Regional Contests: 校内外赛事
 Discussion & Exchange: 交流探讨
 'Encouraging problem discussions, solution sharing, and peer learning across grades and majors.': '支持题目讨论、题解分享与跨年级同学互相交流学习'
 Campus Activity Room: 社团活动室
-'Room 305, Student Activity Center, Future City Campus, China University of Geosciences (Wuhan).': '中国地质大学（武汉）未来城校区大学生活动中心 305 室'
+'Room 305, Student Activity Center, Future City Campus, China University of Geosciences (Wuhan).': '未来城大学生活动中心 305'
 Online Feedback: 线上反馈
 'For account assistance, problem errata, or contest inquiries, please post in the': '如需咨询账号问题、提交题目勘误或了解赛事报名安排，可在'
 or contact association maintainers.: 发帖反馈或联系协会负责同学。
@@ -1187,7 +1188,7 @@ or contact association maintainers.: 发帖反馈或联系协会负责同学。
 'Use online judging resources responsibly. Attacks on the judge sandbox, intentional infinite output/fork bombs, or unauthorized system calls are strictly prohibited.': '请合理使用在线评测资源，禁止针对评测沙箱发起攻击、恶意占用系统资源或尝试越权系统调用。'
 'Uphold academic integrity in contests and assignments. Plagiarism, code sharing during live contests, or account sharing may result in score cancellation.': '请遵守学术诚信与竞赛纪律，在比赛及作业中严禁代码抄袭、赛中串通或代打共用账号，违规者将被取消成绩。'
 'Keep discussions respectful and focused on algorithms, programming, and constructive technical exchange.': '请在讨论区与题解板块保持理性友善交流，聚焦算法思路与工程实践，不发布无关或违规内容。'
-'Problems, editorials, and resources hosted on this platform belong to their respective authors or the CUG ACM-ICPC Association and are provided for educational and contest training use.': '本站收录的原创题目、题解及训练材料版权归原作者或中国地质大学（武汉）ACM-ICPC 协会所有，仅用于教学交流与算法竞赛训练。'
+'Problems, editorials, and resources hosted on this platform belong to their respective authors or the CUG ACM-ICPC Association and are provided for educational and contest training use.': '本站收录的原创题目、题解及训练材料版权归原作者或地大 ACM-ICPC 协会所有，仅用于教学交流与算法竞赛训练。'
 'If you believe any problem statement, solution, or asset infringes your copyright, please reach out via the Contact Us section with proof of ownership and the corresponding link so we can review and remove it promptly.': '如您认为本站中的题目描述、题解或配图素材存在版权争议，请通过“联系我们”渠道提供权属说明与对应页面链接，我们将在核实后及时处理或下架。'
 University Motto: 校训
 'Be austere and plain, seek truth and pragmatism.': '艰苦朴素，求真务实。'

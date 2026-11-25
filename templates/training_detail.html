@@ -4,19 +4,21 @@
   {%- if Object.keys(udict).length -%}
   <div class="medium-2 columns mobile--hide">
     <div data-sticky="large"><div class="section side">
-      <ol class="menu">
-        <li class="menu__item nojs--hide">
-          <form method="get" id="searchForm">
-            <select name="group" class="select"{% if not groups.length %} style="display:none"{% endif %}>
-              <option value="all" selected>{{ _('All') }}</option>
-              {% for group in groups %}
-                <option value="{{ group.uids.join(',') }}">{{ group.name }}</option>
-              {% endfor %}
-            </select>
-            <input name="uid" type="text" class="search__input textbox" placeholder="{{ _('Select User') }}">
-          </form>
-        </li>
-        <ul class="enroll_user_menu">
+      <div class="cug-training-user-filter nojs--hide">
+        <form method="get" id="searchForm">
+          <select name="group" class="select"{% if not groups.length %} style="display:none"{% endif %}>
+            <option value="all" selected>{{ _('All') }}</option>
+            {% for group in groups %}
+              <option value="{{ group.uids.join(',') }}">{{ group.name }}</option>
+            {% endfor %}
+          </select>
+          <span class="cug-input-icon-wrap">
+            <span class="icon icon-search"></span>
+            <input name="uid" type="text" class="search__input textbox" placeholder="{{ _('Select User') }}" autocomplete="off">
+          </span>
+        </form>
+      </div>
+      <ul class="menu enroll_user_menu">
         {%- for uid, udoc in udict -%}
         <li class="menu__item enroll_user_menu_item" data-uid="{{ uid }}" data-uname="{{ udoc.uname }}" {% if handler.user.hasPerm(perm.PERM_VIEW_USER_PRIVATE_INFO) and udoc.displayName %}data-displayname="{{ udoc.displayName }}"{% endif %}>
           <a href="./{{ tdoc._id }}?uid={{ uid }}" class="menu__link{% if (handler.request.query.uid or handler.user._id) == uid %} active{% endif %}">
@@ -33,8 +35,7 @@
           </a>
         </li>
         {%- endfor -%}
-        </ul>
-      </ol>
+      </ul>
     </div></div>
   </div>
   <div class="medium-7 columns">
