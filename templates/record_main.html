@@ -22,38 +22,28 @@
           </div>
         </div>
         <div class="section__body">
-          <div class="row">
-            <div class="medium-2 columns">
-              <label class="filter-user">
-                {{ _('By Username / UID') }}
-                <input name="uidOrName" type="text" class="textbox" value="{{ filterUidOrName }}" autocomplete="off" data-autofocus>
-              </label>
+          <div class="cug-record-filter-grid">
+            <div class="cug-record-filter-field">
+              <label class="filter-user" for="record-filter-user">{{ _('By Username / UID') }}</label>
+              <input id="record-filter-user" name="uidOrName" type="text" class="textbox" value="{{ filterUidOrName }}" autocomplete="off" data-autofocus>
             </div>
-            <div class="medium-2 columns">
-              <label>
-                {{ _('By Problem') }}
-                <input name="pid" type="text" class="textbox" value="{{ filterPid }}">
-              </label>
+            <div class="cug-record-filter-field">
+              <label for="record-filter-pid">{{ _('By Problem') }}</label>
+              <input id="record-filter-pid" name="pid" type="text" class="textbox" value="{{ filterPid }}">
             </div>
-            <div class="medium-2 columns">
-              <label>
-                {{ _('By Contest') }}
-                <input name="tid" type="text" class="textbox" value="{{ filterTid }}">
-              </label>
+            <div class="cug-record-filter-field">
+              <label for="record-filter-tid">{{ _('By Contest') }}</label>
+              <input id="record-filter-tid" name="tid" type="text" class="textbox" value="{{ filterTid }}">
             </div>
-            <div class="medium-3 columns">
-              <label>
-                {{ _('By Language') }}
-              </label>
-              <select class="compact select" name="lang">
+            <div class="cug-record-filter-field">
+              <label for="record-filter-lang">{{ _('By Language') }}</label>
+              <select id="record-filter-lang" class="compact select" name="lang">
                 <option value="">{{ _('All Languages') }}</option>
               </select>
             </div>
-            <div class="medium-3 columns">
-              <label>
-                {{ _('By Status') }}
-              </label>
-              <select class="compact select" name="status">
+            <div class="cug-record-filter-field">
+              <label for="record-filter-status">{{ _('By Status') }}</label>
+              <select id="record-filter-status" class="compact select" name="status">
                 <option value="" {% if typeof(filterStatus) != 'number' %}selected{% else %}{% endif %}>{{ _('All Submissions') }}</option>
                 {%- for k,v in utils.status.STATUS_TEXTS -%}
                 <option value="{{k}}" {% if filterStatus == k %}selected{% else %}{% endif %}>{{v}}</option>
@@ -64,6 +54,14 @@
         </div>
       </div>
     </form>
+    {% set _recordQs = (('&tid=' + (filterTid.toString()|urlencode)) if filterTid else '')
+      + (('&uidOrName=' + ((filterUidOrName + '')|urlencode)) if filterUidOrName else '')
+      + (('&lang=' + ((filterLang + '')|urlencode)) if filterLang else '')
+      + (('&status=' + filterStatus) if typeof(filterStatus) == 'number' else '')
+      + (('&pid=' + ((filterPid + '')|urlencode)) if filterPid else '')
+      + ('&all=1' if all else '')
+      + ('&allDomain=1' if allDomain else '') %}
+    {% set _canPaginate = handler.user.hasPriv(PRIV.PRIV_VIEW_JUDGE_STATISTICS) or filterTid or filterPid or filterUidOrName %}
     <div class="section">
       <div class="section__body no-padding">
       {% if not rdocs.length %}
@@ -71,6 +69,13 @@
         {{ nothing.render('Oh, there is no task in the queue!') }}
         {% else %}
         {{ nothing.render('Oh, there are no tasks that match the filter!') }}
+        {% endif %}
+        {% if _canPaginate and page > 1 %}
+        <ul class="pager pager-bottom">
+          <li><a class="pager__item first link" href="?page=1{{ _recordQs }}">{{ _('pager_first') }}</a></li>
+          <li><a class="pager__item previous link" href="?page={{ page - 1 }}{{ _recordQs }}">{{ _('pager_previous') }}</a></li>
+          <li><span class="pager__item current">{{ page }}</span></li>
+        </ul>
         {% endif %}
       {% else %}
         <table class="data-table record_main__table">
@@ -102,18 +107,14 @@
           {%- endfor -%}
           </tbody>
         </table>
-        {% if handler.user.hasPriv(PRIV.PRIV_VIEW_JUDGE_STATISTICS) or filterTid or filterPid or filterUidOrName %}
-        <ul class="pager">
-          <li>
-            <a class="pager__item next link" href="?page={{ page + 1 }}{{
-              (('&tid=' + filterTid) if filterTid else '')
-              + (('&uidOrName=' + filterUidOrName) if filterUidOrName else '')
-              + (('&lang=' + filterLang) if filterLang else '')
-              + (('&status=' + filterStatus) if filterStatus else '')
-              + (('&pid=' + filterPid) if filterPid else '')
-              + ('&all=1' if all else '')
-              + ('&allDomain=1' if allDomain else '') }}">{{ _('pager_next') }}</a>
-          </li>
+        {% if _canPaginate %}
+        <ul class="pager pager-bottom">
+          {% if page > 1 %}
+          <li><a class="pager__item first link" href="?page=1{{ _recordQs }}">{{ _('pager_first') }}</a></li>
+          <li><a class="pager__item previous link" href="?page={{ page - 1 }}{{ _recordQs }}">{{ _('pager_previous') }}</a></li>
+          {% endif %}
+          <li><span class="pager__item current">{{ page }}</span></li>
+          <li><a class="pager__item next link" href="?page={{ page + 1 }}{{ _recordQs }}">{{ _('pager_next') }}</a></li>
         </ul>
         {% endif %}
       {% endif %}

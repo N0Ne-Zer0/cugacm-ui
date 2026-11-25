@@ -47,19 +47,19 @@
       </li>
     {% endif %}
     {% if model.contest.canShowScoreboard.call(handler, tdoc, false) %}
-      <li class="menu__item"><a class="menu__link" href="{{ url('homework_scoreboard', tid=tdoc.docId) }}">
+      <li class="menu__item"><a class="menu__link{% if page_name == 'homework_scoreboard' %} active{% endif %}" href="{{ url('homework_scoreboard', tid=tdoc.docId) }}">
         <span class="icon icon-statistics"></span> {{ _('Scoreboard') }}
       </a></li>
     {% elif model.contest.canViewHiddenScoreboard(handler, tdoc) %}
-      <li class="menu__item"><a class="menu__link" href="{{ url('homework_scoreboard', tid=tdoc.docId) }}">
+      <li class="menu__item"><a class="menu__link{% if page_name == 'homework_scoreboard' %} active{% endif %}" href="{{ url('homework_scoreboard', tid=tdoc.docId) }}">
         <span class="icon icon-statistics"></span> {{ _('Scoreboard (Hidden)') }}
       </a></li>
     {% endif %}
     {% if handler.user.own(tdoc) or handler.user.hasPerm(perm.PERM_EDIT_HOMEWORK) %}
-      <li class="menu__item"><a class="menu__link" href="{{ url('homework_edit', tid=tdoc.docId) }}">
+      <li class="menu__item"><a class="menu__link{% if page_name == 'homework_edit' %} active{% endif %}" href="{{ url('homework_edit', tid=tdoc.docId) }}">
         <span class="icon icon-edit"></span> {{ _('Edit Homework') }}
       </a></li>
-      <li class="menu__item"><a class="menu__link" href="{{ url('homework_files', tid=tdoc.docId) }}">
+      <li class="menu__item"><a class="menu__link{% if page_name == 'homework_files' %} active{% endif %}" href="{{ url('homework_files', tid=tdoc.docId) }}">
         <span class="icon icon-file"></span> {{ _('Files') }}
       </a></li>
     {% endif %}
@@ -81,13 +81,28 @@
       <li class="menu__seperator"></li>
     </ol>
   </div>
-  <div class="section__body typo">
-    <dl class="large horizontal">
-      <dt>{{ _('Status') }}</dt><dd>{% if model.contest.isNotStarted(tdoc) %}<span class="cug-status-tag cug-status-tag--ready">{{ _('Ready') }}</span>{% elif model.contest.isDone(tdoc) %}<span class="cug-status-tag cug-status-tag--done">{{ _('Done') }}</span>{% else %}<span class="cug-status-tag cug-status-tag--live">{{ _('Live') }}</span>{% endif %}</dd>
-      <dt>{{ _('Problem') }}</dt><dd>{{ tdoc['pids']|length }}</dd>
-      <dt>{{ _('Open Since') }}</dt><dd>{{ homework.render_time(tdoc['beginAt']) }}</dd>
-      <dt>{{ _('Deadline') }}</dt><dd>{{ homework.render_time(tdoc['penaltySince']) }}</dd>
-      <dt>{{ _('Can be Extended For') }}</dt><dd>{{ homework.render_extension(tdoc) }} {{ _('hour(s)') }}</dd>
-    </dl>
+  <div class="section__body">
+    <div class="cug-sidebar-info-list">
+      <div class="cug-info-row">
+        <span class="cug-info-label">{{ _('Status') }}</span>
+        <span class="cug-info-value">{% if model.contest.isNotStarted(tdoc) %}<span class="cug-status-tag cug-status-tag--ready">{{ _('Ready') }}</span>{% elif model.contest.isDone(tdoc) %}<span class="cug-status-tag cug-status-tag--done">{{ _('Done') }}</span>{% else %}<span class="cug-status-tag cug-status-tag--live">{{ _('Live') }}</span>{% endif %}</span>
+      </div>
+      <div class="cug-info-row">
+        <span class="cug-info-label">{{ _('Problem') }}</span>
+        <span class="cug-info-value font-mono">{{ tdoc['pids']|length }}</span>
+      </div>
+      <div class="cug-info-row">
+        <span class="cug-info-label">{{ _('Open Since') }}</span>
+        <span class="cug-info-value">{{ homework.render_time(tdoc['beginAt']) }}</span>
+      </div>
+      <div class="cug-info-row">
+        <span class="cug-info-label">{{ _('Deadline') }}</span>
+        <span class="cug-info-value">{{ homework.render_time(tdoc['penaltySince']) }}</span>
+      </div>
+      <div class="cug-info-row">
+        <span class="cug-info-label">{{ _('Can be Extended For') }}</span>
+        <span class="cug-info-value">{{ homework.render_extension(tdoc) }} {{ _('hour(s)') }}</span>
+      </div>
+    </div>
   </div>
 </div>

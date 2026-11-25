@@ -7,7 +7,7 @@
     </div>
     <ol class="section__list contest__list">
       {%- for tdoc in tdocs -%}
-        <li class="section__list__item contest__item contest-type--{{ tdoc.rule }} {% if model.contest.isOngoing(tdoc, tsdoc) %}{{ 'live' }}{% elif model.contest.isNotStarted(tdoc) %}{{ 'ready' }}{% endif %}">
+        <li class="section__list__item contest__item contest-type--{{ tdoc.rule }}{% if model.contest.isOngoing(tdoc, tsdict[tdoc.docId]) %} live{% elif model.contest.isNotStarted(tdoc) %} ready{% endif %}">
           <div class="media">
             <div class="media__left medium">
               <div class="contest__date numbox">
@@ -19,7 +19,7 @@
               <h1 class="contest__title"><a href="{{ url('contest_detail', tid=tdoc.docId) }}" data-emoji-enabled>{{ tdoc.title }}</a></h1>
               <ul class="supplementary list">
                 <li>
-                  {% if model.contest.isOngoing(tdoc, tsdoc) %}
+                  {% if model.contest.isOngoing(tdoc, tsdict[tdoc.docId]) %}
                     <span class="cug-status-tag cug-status-tag--live">{{ _('Live') }}</span>
                   {% elif model.contest.isNotStarted(tdoc) %}
                     <span class="cug-status-tag cug-status-tag--ready">{{ _('Ready') }}</span>

@@ -22,6 +22,7 @@
           <li class="footer__category__item"><a href="{{ url('problem_main') }}">{{ _('Problems') }}</a></li>
           <li class="footer__category__item"><a href="{{ url('contest_main') }}">{{ _('Contests') }}</a></li>
           <li class="footer__category__item"><a href="{{ url('homework_main') }}">{{ _('Homework') }}</a></li>
+          <li class="footer__category__item"><a href="{{ url('training_main') }}">{{ _('Training') }}</a></li>
           {% if ui.getNodes('Nav').map(eval("n=>n.name")).includes('title_main') %}
             <li class="footer__category__item"><a href="{{ url('title_main') }}">{{ _('User Titles') }}</a></li>
           {% endif %}

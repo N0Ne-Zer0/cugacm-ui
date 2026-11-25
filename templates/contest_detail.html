@@ -12,15 +12,46 @@
         <h1 class="section__title">{{ tdoc.title }}</h1>
       </div>
       <div class="section__body">
-        <span class="problem__tag-item">{{ _(model.contest.statusText(tdoc, tsdoc)) }}</span>
-        <span class="problem__tag-item icon icon-award">{{ _(model.contest.RULES[tdoc.rule].TEXT) }}</span>
-        <span class="problem__tag-item">{{ _('Start at') }}: {{ contest.render_time(tsdoc.startAt or tdoc.beginAt) }}</span>
-        <span class="problem__tag-item icon icon-schedule">{{ contest.render_duration(tdoc) }} {{ _('hour(s)') }}</span>
-        <span class="problem__tag-item">{{ _('Host') }}: {{ user.render_inline(udict[tdoc.owner], badge=false) }}</span>
-        <span class="problem__tag-item icon icon-user--multiple">{{ tdoc['attend']|default(0) }}</span>
-        {% if tsdoc.attend %}
-          <span class="problem__tag-item icon icon-check">{{ _('Attended') }}</span>
-        {% endif %}
+        <ul class="cug-contest-meta contest-type--{{ tdoc.rule }}">
+          <li class="cug-meta-item">
+            {% if model.contest.isOngoing(tdoc, tsdoc) %}
+              <span class="cug-status-tag cug-status-tag--live">{{ _(model.contest.statusText(tdoc, tsdoc)) }}</span>
+            {% elif model.contest.isNotStarted(tdoc) %}
+              <span class="cug-status-tag cug-status-tag--ready">{{ _(model.contest.statusText(tdoc, tsdoc)) }}</span>
+            {% else %}
+              <span class="cug-status-tag cug-status-tag--done">{{ _(model.contest.statusText(tdoc, tsdoc)) }}</span>
+            {% endif %}
+          </li>
+          <li class="cug-meta-item">
+            <span class="contest-type-tag"><span class="icon icon-award"></span>{{ _(model.contest.RULES[tdoc.rule].TEXT) }}</span>
+          </li>
+          {% if tdoc.rated %}
+          <li class="cug-meta-item">
+            <span class="contest-tag-rated"><span class="icon icon-star"></span>Rated</span>
+          </li>
+          {% endif %}
+          <li class="cug-meta-item">
+            <span class="icon icon-calendar cug-meta-icon"></span>
+            <span class="cug-meta-text">{{ _('Start at') }}: {{ contest.render_time(tsdoc.startAt or tdoc.beginAt) }}</span>
+          </li>
+          <li class="cug-meta-item">
+            <span class="icon icon-schedule cug-meta-icon"></span>
+            <span class="cug-meta-text">{{ contest.render_duration(tdoc) }} {{ _('hour(s)') }}</span>
+          </li>
+          <li class="cug-meta-item">
+            <span class="icon icon-user cug-meta-icon"></span>
+            <span class="cug-meta-text">{{ _('Host') }}: {{ user.render_inline(udict[tdoc.owner], badge=false) }}</span>
+          </li>
+          <li class="cug-meta-item">
+            <span class="icon icon-user--multiple cug-meta-icon"></span>
+            <span class="cug-meta-text">{{ tdoc['attend']|default(0) }}</span>
+          </li>
+          {% if tsdoc.attend %}
+          <li class="cug-meta-item">
+            <span class="cug-status-tag cug-status-tag--attended"><span class="icon icon-check"></span> {{ _('Attended') }}</span>
+          </li>
+          {% endif %}
+        </ul>
       </div>
     </div>
     <div class="section">

@@ -5,23 +5,14 @@
   {% if not psdocs.length %}
     {{ nothing.render("This person is lazy and didn't write any solutions.") }}
   {% else %}
-    <div class="section__body typo no-media">
-      <div class="typo section__body">
-        {% set _mark = Math.ceil(psdocs.length/4) %}
-        {% macro col(psdocs) %}
-          <div class="medium-3 columns"><ul>
-            {% for psdoc in psdocs %}
-              <li><a href="{{ url('problem_solution_detail', pid=psdoc.parentId, sid=psdoc._id) }}">{{ pdict[psdoc.parentId].title|default(psdoc._id) }}</a></li>
-            {% endfor %}
-          </ul></div>
-        {% endmacro %}
-        <div class="row">
-          {{ col(psdocs.slice(0, _mark)) }}
-          {{ col(psdocs.slice(_mark, _mark*2)) }}
-          {{ col(psdocs.slice(_mark*2, _mark*3)) }}
-          {{ col(psdocs.slice(_mark*3)) }}
-        </div>
-      </div>
+    <div class="section__body no-media">
+      <ul class="cug-profile-solved-grid">
+        {% for psdoc in psdocs %}
+          <li class="cug-profile-solved-item">
+            <a href="{{ url('problem_solution_detail', pid=psdoc.parentId, sid=psdoc._id) }}" data-tooltip="{{ pdict[psdoc.parentId].title|default(psdoc._id) }}">{{ pdict[psdoc.parentId].title|default(psdoc._id) }}</a>
+          </li>
+        {% endfor %}
+      </ul>
     </div>
   {% endif %}
   </div>
